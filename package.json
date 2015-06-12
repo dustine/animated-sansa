@@ -4,7 +4,7 @@
   "description": "A game about avoiding your past self over a crushing future",
   "main": "app/game.js",
   "scripts": {
-    "test": "node main.js"
+    "test": "beefy game.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,8 @@
   "homepage": "https://github.com/dustine/animated-sansa#readme",
   "dependencies": {
     "browserify": "^10.2.4",
-    "craftyjs": "^0.6.3"
+    "craftyjs": "^0.6.3",
+    "jquery": "^2.1.4"
   },
   "devDependencies": {
     "beefy": "^2.1.5"
