@@ -73,3 +73,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# User defined ignores
+.jshintrc
+dist/
