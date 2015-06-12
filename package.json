@@ -1,0 +1,31 @@
+{
+  "name": "animated-sansa",
+  "version": "0.0.0",
+  "description": "A game about avoiding your past self over a crushing future",
+  "main": "app/game.js",
+  "scripts": {
+    "test": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dustine/animated-sansa.git"
+  },
+  "keywords": [
+    "game",
+    "timetravel",
+    "arcade"
+  ],
+  "author": "Dustine Camacho",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dustine/animated-sansa/issues"
+  },
+  "homepage": "https://github.com/dustine/animated-sansa#readme",
+  "dependencies": {
+    "browserify": "^10.2.4",
+    "craftyjs": "^0.6.3"
+  },
+  "devDependencies": {
+    "beefy": "^2.1.5"
+  }
+}
