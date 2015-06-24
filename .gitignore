@@ -77,4 +77,3 @@ $RECYCLE.BIN/
 # User defined ignores
 # =========================
 .jshintrc
-dist
