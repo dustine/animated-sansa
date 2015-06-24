@@ -1,7 +1,7 @@
 var Crafty = require('craftyjs')
 var $ = require('jquery')
 
-Crafty.init(600, 300, '')
+Crafty.init(600, 300, 'game')
 
 var game = $('#game')
 game.on('click', function () {
