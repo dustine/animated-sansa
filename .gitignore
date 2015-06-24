@@ -75,5 +75,10 @@ $RECYCLE.BIN/
 *.lnk
 
 # User defined ignores
+# =========================
 .jshintrc
-dist/
+# dist/
+
+# gt-pages specific blocking
+# =========================
+src
