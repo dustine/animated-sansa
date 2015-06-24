@@ -4,11 +4,8 @@
   "description": "A game about avoiding your past self over a crushing future",
   "main": "src/animated-sansa.js",
   "scripts": {
-    "test": "beefy src/animated-sansa.js",
-    "build-debug": "browserify src/animated-sansa.js -d > dist/animated-sansa.js",
-    "build-min": "browserify src/animated-sansa.js | uglifyjs --screwie8 > dist/animated-sansa.min.js",
-    "build": "npm run build-debug && npm run build-min",
-    "watch": "beefy src/animated-sansa.js --live --open"
+    "start": "budo src/animated-sansa.js:js/animated-sansa.js --live | opnr | garnish",
+    "build": "browserify src/animated-sansa.js | uglifyjs --screwie8 > js/animated-sansa.js"
   },
   "repository": {
     "type": "git",
@@ -25,13 +22,11 @@
     "url": "https://github.com/dustine/animated-sansa/issues"
   },
   "homepage": "https://github.com/dustine/animated-sansa#readme",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "craftyjs": "^0.6.3",
     "jquery": "^2.1.4",
-    "beefy": "^2.1.5",
-    "browserify": "^10.2.4",
+    "opnr": "^1.0.4",
     "uglify-js": "^2.4.23"
   }
 }
