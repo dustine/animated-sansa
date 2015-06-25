@@ -8,14 +8,26 @@ var height = 400
 Crafty.init(width, height, 'game')
 Crafty.background('rgb(0,0,0)')
 
-// walls
+// borders
+Crafty.e('Wall, 2D, Canvas, Color')
+  .color('red')
+  .attr({x: 0, y: 0, h: 20, w: width})
 
 // player particle
-var player = Crafty.e('Current, 2D, DOM, Color, Fourway')
+var player = Crafty.e('Current, 2D, DOM, Color, Fourway, Collision')
   .color('green')
   .css('border-radius', '100%')
-  .attr({ x: width / 2 - 5, y: height / 2 - 5, w: 10, h: 10 })
+  .attr({x: width / 2 - 5, y: height / 2 - 5, w: 10, h: 10})
   .fourway(4)
+  .onHit('Wall', function (hitdata) {
+    console.log(this.pos, this._movement, this._speed)
+    this.shift(-this._movement.x, -this._movement.y, 0, 0)
+    // if (this._movement) {
+    //   this.x -= this._movement.x
+    //   this.y -= this._movement.y
+    // }
+    this._speed = 0
+  })
 
 if (debug) {
   player.addComponent('Keyboard')
@@ -48,19 +60,35 @@ function lockSuccess () {
   if (document.pointerLockElement === Crafty.stage.elem) {
     player.fourway(0)
     setTimeout(function () {
-      Crafty.addEvent(player, Crafty.stage.elem, 'mousemove', player.mouseMove)
+      Crafty.addEvent(player, Crafty.stage.elem, 'mousemove', updateLocalMouseMovement)
+      player.bind('EnterFrame', mouseMove)
       console.log('mouse activated')
     }, 50)
   } else {
-    Crafty.removeEvent(player, Crafty.stage.elem, 'mousemove', player.mouseMove)
+    Crafty.removeEvent(player, Crafty.stage.elem, 'mousemove', updateLocalMouseMovement)
+    player.unbind('EnterFrame', mouseMove)
     player.fourway(4)
   }
   console.log('pointerlockchange')
 }
 
-player.mouseMove = function (me) {
-  this.x += me.movementX
-  this.y += me.movementY
+var _movX, _movY
+
+function updateLocalMouseMovement (me) {
+  // this.x += me.movementX
+  // this.y += me.movementY
+  _movX += me.movementX
+  _movY += me.movementY
+}
+
+function mouseMove () {
+  player.shift(_movX, _movY, 0, 0)
+  if (this.hit('Wall')) {
+    player.shift(-_movX, -_movY, 0, 0)
+  }
+  _movX = _movY = 0
+  // this.speed.x = me.movementX
+  // this.speed.y = me.movementY
 }
 
 $(document).on('pointerlockchange', lockSuccess)
