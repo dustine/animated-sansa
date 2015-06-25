@@ -8,6 +8,8 @@ var height = 400
 Crafty.init(width, height, 'game')
 Crafty.background('rgb(0,0,0)')
 
+// walls
+
 // player particle
 var player = Crafty.e('Current, 2D, DOM, Color, Fourway')
   .color('green')
@@ -44,8 +46,11 @@ function lockError () {
 
 function lockSuccess () {
   if (document.pointerLockElement === Crafty.stage.elem) {
-    Crafty.addEvent(player, Crafty.stage.elem, 'mousemove', player.mouseMove)
     player.fourway(0)
+    setTimeout(function () {
+      Crafty.addEvent(player, Crafty.stage.elem, 'mousemove', player.mouseMove)
+      console.log('mouse activated')
+    }, 50)
   } else {
     Crafty.removeEvent(player, Crafty.stage.elem, 'mousemove', player.mouseMove)
     player.fourway(4)
