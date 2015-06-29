@@ -1,5 +1,6 @@
 var Crafty = require('craftyjs')
-var $ = require('jquery')
+// var $ = require('jquery')
+var $ = window.$
 
 var debug = true
 var width = 600
@@ -17,10 +18,10 @@ Crafty.e('Wall, 2D, Canvas, Color')
   .attr({x: 0, y: 0, h: height, w: 20})
 Crafty.e('Wall, 2D, Canvas, Color')
   .color('red')
-  .attr({x: 0, y: height-20, h: 20, w: width})
+  .attr({x: 0, y: height - 20, h: 20, w: width})
 Crafty.e('Wall, 2D, Canvas, Color')
   .color('red')
-  .attr({x: width-20, y: 0, h: height, w: 20})
+  .attr({x: width - 20, y: 0, h: height, w: 20})
 
 // player particle
 var player = Crafty.e('Current, 2D, DOM, Color, Fourway, Collision')

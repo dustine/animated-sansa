@@ -5,7 +5,7 @@
   "main": "src/animated-sansa.js",
   "scripts": {
     "start": "budo src/animated-sansa.js:js/animated-sansa.js --live | opnr | garnish",
-    "build": "browserify src/animated-sansa.js | uglifyjs --screwie8 > js/animated-sansa.js"
+    "build": "browserify src/animated-sansa.js | uglifyjs -cm --screwie8 > js/animated-sansa.js"
   },
   "repository": {
     "type": "git",
