@@ -2,8 +2,9 @@ var Crafty = require('craftyjs')
 // var $ = require('jquery')
 var $ = window.$
 
-// var debug = true
+this.debug = true
 
+// # CONSTANTS
 // global consts
 var WIDTH = 600
 var HEIGHT = 400
@@ -11,11 +12,13 @@ var BORDER = 20
 
 // player constants
 var MAX_SPEED = 8
-var RADIUS = 4.5
+var RADIUS = 5
 
 Crafty.init(WIDTH, HEIGHT, 'game')
+// TODO(Dustine): Scenes
 Crafty.background('rgb(0,0,0)')
 
+// # CUSTOM COMPONENTS
 // mouse control
 Crafty.c('PointerWay', {
   init: function () {
@@ -51,8 +54,8 @@ Crafty.c('PointerWay', {
         newMovY = Math.sign(movY) * MAX_SPEED
         newMovX = movX * (MAX_SPEED / Math.abs(movY))
       }
-      movX = newMovX
-      movY = newMovY
+      movX = Math.round(newMovX)
+      movY = Math.round(newMovY)
     }
     this.x += movX
     this.y += movY
@@ -85,14 +88,49 @@ Crafty.c('PointerWay', {
   }
 })
 
-// player particle
-var player = Crafty.e('Current, 2D, DOM, Color, Collision, Fourway')
-  .color('rgb(7, 124, 190)')
-  .css('border-radius', '100%')
-  .attr({x: WIDTH / 2 - RADIUS, y: HEIGHT / 2 - RADIUS, w: RADIUS * 2, h: RADIUS * 2})
-  .fourway(4)
-  .origin('center')
+Crafty.c('Particle', {
+  init: function () {
+    this.addComponent('2D, DOM, Color')
+    this.attr({x: WIDTH / 2 - RADIUS, y: HEIGHT / 2 - RADIUS, w: RADIUS * 2, h: RADIUS * 2})
+    this.css('border-radius', '100%')
+    this.origin('center')
+  }
+})
 
+// # GAME ENTITIES
+// Player particle
+Crafty.c('CurrentAvatar', {
+  init: function () {
+    this.addComponent('Particle, Collision, Fourway, Persist')
+    this._previousFrames = []
+    this.z = 1000
+  }
+})
+
+var player = Crafty.e('CurrentAvatar')
+  .color('rgb(7, 124, 190)')
+  .fourway(4)
+
+// # DEBUG
+// Debug commands
+if (this.debug) {
+  player.addComponent('WiredHitBox')
+  player.addComponent('Keyboard')
+  player.bind('KeyDown', function (ke) {
+    if (ke.key === Crafty.keys.R) {
+      this.x = WIDTH / 2 - RADIUS
+      this.y = HEIGHT / 2 - RADIUS
+    } else if (ke.key === Crafty.keys.Q) {
+      console.log(this.x, this.y)
+    } else if (ke.key === Crafty.keys.C) {
+      if (Crafty._current === 'Loop') {
+        Crafty.scene('Scratch')
+      }
+    }
+  })
+}
+
+// ## Mouse movements
 function collision () {
   if (this._x < BORDER) {
     this.x = BORDER
@@ -107,7 +145,7 @@ function collision () {
   }
 }
 
-// hack: adding collision detection to keyboard controls
+// Hack: adding collision detection to keyboard controls
 player.unbind('EnterFrame', player._enterframe)
 player.bind('EnterFrame', function () {
   player._enterframe()
@@ -116,32 +154,11 @@ player.bind('EnterFrame', function () {
   }
 })
 
-if (this.debug) {
-  player.addComponent('WiredHitBox')
-  player.addComponent('Keyboard')
-  player.bind('KeyDown', function (ke) {
-    if (ke.key === Crafty.keys.R) {
-      this.x = WIDTH / 2 - RADIUS
-      this.y = HEIGHT / 2 - RADIUS
-    } else if (ke.key === Crafty.keys.Q) {
-      console.log(this.x, this.y)
-    }
-  })
-}
-
-// mouse controls
-
+// mouse lock mechanism
 var game = $(Crafty.stage.elem)
 game.on('click', function () {
   this.requestPointerLock()
 })
-
-// document.addEventListener('pointerlockerror', lockError, false)
-
-// TODO Remove or rework this later
-function lockError () {
-  console.log('Pointer lock failed')
-}
 
 var lockOnce = true
 function lockChange () {
@@ -156,7 +173,6 @@ function lockChange () {
       player.addComponent('PointerWay')
         .pointerway(MAX_SPEED)
         .callback(collision)
-      console.log('mouse activated')
     }, 50)
   } else {
     // reset back to keyboard control
@@ -164,8 +180,106 @@ function lockChange () {
     player.removeComponent('PointerWay')
     player.enableControl()
   }
-  console.log('pointerlockchange')
+}
+
+// TODO(Dustine): Remove or rework this later
+function lockError () {
 }
 
 $(document).on('pointerlockchange', lockChange)
 $(document).on('pointerlockerror', lockError)
+
+// ## Recording location
+function recordFirstFrame (frame) {
+  this._firstFrame = frame.frame
+}
+
+function record (frame) {
+  this._previousFrames[frame.frame] = {
+      // dt: frame.dt,
+      x: this.x,
+      y: this.y
+    }
+}
+
+Crafty.c('Gone', {
+  init: function () {
+    this.color('rgb(117, 27, 192)')
+    // this.visible = false
+  }
+})
+
+Crafty.c('GhostAvatar', {
+  _f: 0,
+  init: function () {
+    this.addComponent('Particle, Collision, Persist')
+    this.color('grey')
+    this.bind('ResetGhosts', this.reset)
+    this.bind('StartGhosts', this.start)
+  },
+  _enterFrame: function () {
+    if (this._f >= this._previousFrames.length) {
+      this.trigger('EndRecording')
+      return
+    }
+    var pos = this._previousFrames[this._f++]
+    this.x = pos.x
+    this.y = pos.y
+  },
+  _endRecording: function () {
+    this.unbind('EnterFrame', this._enterFrame)
+    this.addComponent('Gone')
+  },
+  ghostAvatar: function (firstFrame, previousFrames) {
+    this._firstFrame = firstFrame
+    this._previousFrames = previousFrames
+    this._f = this._firstFrame
+    this.x = this._previousFrames[this._firstFrame].x
+    this.y = this._previousFrames[this._firstFrame].y
+  },
+  reset: function () {
+    this.trigger('EndRecording')
+    this._f = this._firstFrame
+    this.removeComponent('Gone')
+    this.x = this._previousFrames[this._firstFrame].x
+    this.y = this._previousFrames[this._firstFrame].y
+  },
+  start: function () {
+    this.color('rgb(209, 210, 167)')
+    this.one('EndRecording', this._endRecording)
+    this.bind('EnterFrame', this._enterFrame)
+  }
+})
+
+Crafty.scene('Scratch', function (firstFrame, previousFrames) {
+  // set timeout for restart of ghosties
+  setTimeout(function () {
+    // TODO: wait for the first frame available ?
+    Crafty.scene('Loop')
+  }, 2000)
+})
+
+Crafty.scene('Loop', function () {
+  // start player's recording
+  player.one('ExitFrame', recordFirstFrame)
+  player.bind('ExitFrame', record)
+  // and play everyone else's recording
+  Crafty.trigger('StartGhosts')
+}, function () {
+  // stop recording
+  player.unbind('ExitFrame', record)
+  // save current run's values
+  var firstFrame = player._firstFrame || 0
+  var previousFrames = player._previousFrames || []
+  // reset player
+  player._previousFrames = []
+  // restart old ghosts
+  Crafty.trigger('ResetGhosts')
+  // ready the new ghost
+  if (previousFrames.length !== 0) {
+    Crafty.e('GhostAvatar')
+      .ghostAvatar(firstFrame, previousFrames)
+  }
+})
+
+Crafty.scene('Loop')
