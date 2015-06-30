@@ -6,11 +6,12 @@
     "jquery"
   ],
   "loadEagerly": [
-    "js/**/*.js"
+    "js/**/*.js",
+    "src/**/*.js"
   ],
   "plugins": {
     "complete_strings": {},
-    "lint": {},
+    "node": {},
     "doc_comment": {
      "fullDocs": true
     }
