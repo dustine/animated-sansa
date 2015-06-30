@@ -144,7 +144,6 @@ function lockError () {
 }
 
 var lockOnce = true
-
 function lockChange () {
   // TODO Only bind the EnterFrame once, it's doing every time we click
   if (document.pointerLockElement === Crafty.stage.elem) {
