@@ -89,10 +89,11 @@ Crafty.c('PointerWay', {
 
 Crafty.c('Quark', {
   init: function () {
-    this.requires('2D, DOM, Color')
+    this.requires('2D, DOM, Color, Collision')
     this.attr({x: WIDTH / 2 - RADIUS, y: HEIGHT / 2 - RADIUS, w: RADIUS * 2, h: RADIUS * 2})
     this.css('border-radius', '100%')
     this.origin('center')
+    this.collision(new Crafty.circle(this._x / 2, this._y / 2, RADIUS))
   }
 })
 
@@ -100,7 +101,7 @@ Crafty.c('Quark', {
 // Player particle
 Crafty.c('CurrentAvatar', {
   init: function () {
-    this.requires('Quark, Collision, Fourway, Persist')
+    this.requires('Quark, Fourway, Persist')
     this._previousFrames = []
     this.z = 1000
   }
@@ -206,6 +207,34 @@ function record (frame) {
     }
 }
 
+Crafty.c('GhostAvatar', {
+  _f: 0,
+  init: function () {
+    this.requires('Quark, Persist')
+    this.color('grey')
+    this.bind('ResetGhosts', this.reset)
+    this.bind('StartGhosts', this.start)
+  },
+  _init: function () {
+    this._f = this._firstFrame
+    this.x = this._previousFrames[this._firstFrame].x
+    this.y = this._previousFrames[this._firstFrame].y
+  },
+  ghostAvatar: function (firstFrame, previousFrames) {
+    this._firstFrame = firstFrame
+    this._previousFrames = previousFrames
+    this._init()
+  },
+  reset: function () {
+    this.removeComponent('Active')
+    this.color('grey')
+    this._init()
+  },
+  start: function () {
+    this.addComponent('Active')
+  }
+})
+
 Crafty.c('Active', {
   init: function () {
     this.requires('GhostAvatar')
@@ -233,33 +262,6 @@ Crafty.c('Active', {
   }
 })
 
-Crafty.c('GhostAvatar', {
-  _f: 0,
-  init: function () {
-    this.requires('Quark, Collision, Persist')
-    this.color('grey')
-    this.bind('ResetGhosts', this.reset)
-    this.bind('StartGhosts', this.start)
-  },
-  _init: function () {
-    this._f = this._firstFrame
-    this.x = this._previousFrames[this._firstFrame].x
-    this.y = this._previousFrames[this._firstFrame].y
-  },
-  ghostAvatar: function (firstFrame, previousFrames) {
-    this._firstFrame = firstFrame
-    this._previousFrames = previousFrames
-    this._init()
-  },
-  reset: function () {
-    this.removeComponent('Active')
-    this.color('grey')
-    this._init()
-  },
-  start: function () {
-    this.addComponent('Active')
-  }
-})
 // ## update outside GUI
 var loops = 1
 
@@ -280,8 +282,7 @@ function updateLoopCounters (attempts) {
 }
 
 Crafty.scene('Scratch', function () {
-  updateLoopCounters(loops)
-  loops *= 10
+  updateLoopCounters(loops++)
   // set timeout for restart of ghosties
   setTimeout(function () {
     // TODO: wait for the first frame available ?
@@ -310,6 +311,10 @@ Crafty.scene('Loop', function () {
     Crafty.e('GhostAvatar')
       .ghostAvatar(firstFrame, previousFrames)
   }
+})
+
+Crafty.scene('GameOver', function () {
+  // Crafty.text
 })
 
 Crafty.scene('Scratch')
