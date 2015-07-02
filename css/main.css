@@ -116,21 +116,33 @@ body {
   transform: translate(-50%, -50%);
 }
 
-.view-frame {
-  box-shadow: 0 0 1.2em 0.4em #0088ff;
+.game-container > .progress-display {
+  margin-top: 1em;
 }
 
-.game-container > .progress-display {
-  margin-top: 2em;
+.view-frame {
+  width: 600px;
+  height: 400px;
+  box-shadow: 0 0 1.2em 0.4em #0088ff;
+  border-radius: 0.5em;
 }
 
 .progress-display {
+  vertical-align: top;
+  width: 100%;
+  display: table;
   border-radius: 0.5rem;
   background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#f5f6f6 100%);
 }
 
-.progress-display > .loop-counter {
-  float: left;
+.progress-display > .loop-counter,
+.progress-display > .timeline-bar  {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.progress-display > .timeline-bar {
+  padding: 0 0.5em
 }
 
 .loop-counter {
@@ -138,6 +150,7 @@ body {
   background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#f5f6f6 100%);
   border-right: solid thick #b8bac6;
   border-radius: 0.5rem 0 0 0.5rem;
+  width: 6em;
   padding: 0.1em 0.3em 0.1em 0.1em;
 }
 
@@ -160,8 +173,19 @@ body {
   float: left;
 }
 
-.loop-counter> .digit + .digit{
+.loop-counter > .digit + .digit {
   margin-left: 0.2em;
+}
+
+.timeline-bar {
+  height: 100%;
+}
+
+.timeline-bar > .canvas {
+  display: block;
+  margin: 0 auto;
+  /*width: 100%;
+  height: 1.7em;*/
 }
 
 #bottom-gradient {
@@ -171,6 +195,7 @@ body {
   width: 100%;
   background: linear-gradient(to bottom, #001527 0%, #002244 60%, #003366 100%);
   pointer-events: none;
+  z-index: -1000;
 }
 
 /* ==========================================================================

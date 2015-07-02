@@ -6,9 +6,7 @@
         <title>Animated Sansa</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        <!-- Place favicon.ico in the root directory -->
+        <!-- <link rel="apple-touch-icon" href="apple-touch-icon.png"> -->
         <link rel="icon" href="favicon.ico">
         <link rel="stylesheet" href="css/normalize.css">
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
@@ -19,30 +17,30 @@
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
-        <!-- Add your site or application content here -->
-        <div id="bottom-gradient"></div>
         <div class="title-header">
           <h1>Animated Sansa</h1>
         </div>
         <div class="game-container">
           <div class="view-frame" id="animated-sansa"></div>
-          <div class="progress-display clearfix">
-            <div class="loop-counter">
+          <div class="progress-display">
+            <div class="loop-counter clearfix">
               <div class="blinkers">&nbsp;</div>
               <div class="digit">-</div>
               <div class="digit">-</div>
               <div class="digit">-</div>
               <div class="digit">-</div>
             </div>
-            <div class="timeline-bar"></div>
+            <div class="timeline-bar">
+              <canvas class="canvas" id="timeline-bar" width="0" height="0"></canvas>
+            </div>
           </div>
         </div>
-
+        <div id="bottom-gradient"></div>
+        <!-- Scripts -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-2.1.4.min.js"><\/script>')</script>
         <script src="js/plugins.js"></script>
-        <script src="js/main.js" charset="utf-8"></script>
+        <script src="js/main.js"></script>
         <script src="js/animated-sansa.js"></script>
     </body>
 </html>
