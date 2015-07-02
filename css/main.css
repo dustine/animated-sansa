@@ -96,36 +96,80 @@ textarea {
    ========================================================================== */
 
 html {
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: #001527;
+}
+
+.title-header {
   color: #eeeeee;
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif
+  text-align: center;
 }
 
-body{
-  background:#001122
-}
-
-.header{
-  text-align: center
-}
-
-.game-container{
+.game-container {
   position: absolute;
   top: 50%;
   left: 50%;
-  /*margin-right: -50%;*/
+  margin-right: -50%;
   transform: translate(-50%, -50%);
 }
 
-#game{
-  box-shadow: 0 0 15px 5px #0088ff
+.view-frame {
+  box-shadow: 0 0 1.2em 0.4em #0088ff;
 }
 
-#bottom-gradient{
+.game-container > .progress-display {
+  margin-top: 2em;
+}
+
+.progress-display {
+  border-radius: 0.5rem;
+  background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#f5f6f6 100%);
+}
+
+.progress-display > .loop-counter {
+  float: left;
+}
+
+.loop-counter {
+  font-size: 1.5rem;
+  background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#f5f6f6 100%);
+  border-right: solid thick #b8bac6;
+  border-radius: 0.5rem 0 0 0.5rem;
+  padding: 0.1em 0.3em 0.1em 0.1em;
+}
+
+.loop-counter > .blinkers {
+  float: left;
+  width: 1em;
+  height: 100%;
+  pointer-events: none;
+  background-position: center;
+  background-image: url('../img/blinkers.svg');
+  background-repeat: no-repeat;
+}
+
+.loop-counter > .digit {
+  font-weight: bold;
+  background-color: white;
+  border: solid thin black;
+  text-align: center;
+  width: 1em;
+  float: left;
+}
+
+.loop-counter> .digit + .digit{
+  margin-left: 0.2em;
+}
+
+#bottom-gradient {
   position: absolute;
   bottom: 0%;
   height: 10%;
   width: 100%;
-  background: linear-gradient(to bottom, #001122 0%, #002244 60%, #003366 100%);
+  background: linear-gradient(to bottom, #001527 0%, #002244 60%, #003366 100%);
   pointer-events: none;
 }
 

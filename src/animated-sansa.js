@@ -1,5 +1,4 @@
 var Crafty = require('craftyjs')
-// var $ = require('jquery')
 var $ = window.$
 
 this.debug = true
@@ -14,7 +13,7 @@ var BORDER = 20
 var MAX_SPEED = 8
 var RADIUS = 5
 
-Crafty.init(WIDTH, HEIGHT, 'game')
+Crafty.init(WIDTH, HEIGHT, 'animated-sansa')
 // TODO(Dustine): Scenes
 Crafty.background('rgb(0,0,0)')
 
@@ -88,9 +87,9 @@ Crafty.c('PointerWay', {
   }
 })
 
-Crafty.c('Particle', {
+Crafty.c('Quark', {
   init: function () {
-    this.addComponent('2D, DOM, Color')
+    this.requires('2D, DOM, Color')
     this.attr({x: WIDTH / 2 - RADIUS, y: HEIGHT / 2 - RADIUS, w: RADIUS * 2, h: RADIUS * 2})
     this.css('border-radius', '100%')
     this.origin('center')
@@ -101,7 +100,7 @@ Crafty.c('Particle', {
 // Player particle
 Crafty.c('CurrentAvatar', {
   init: function () {
-    this.addComponent('Particle, Collision, Fourway, Persist')
+    this.requires('Quark, Collision, Fourway, Persist')
     this._previousFrames = []
     this.z = 1000
   }
@@ -110,11 +109,16 @@ Crafty.c('CurrentAvatar', {
 var player = Crafty.e('CurrentAvatar')
   .color('rgb(7, 124, 190)')
   .fourway(4)
+  .onHit('Active', function (hitInfo) {
+    this.color('red')
+  }, function () {
+    this.color('rgb(7, 124, 190)')
+  })
 
 // # DEBUG
 // Debug commands
 if (this.debug) {
-  player.addComponent('WiredHitBox')
+  // player.addComponent('WiredHitBox')
   player.addComponent('Keyboard')
   player.bind('KeyDown', function (ke) {
     if (ke.key === Crafty.keys.R) {
@@ -202,56 +206,82 @@ function record (frame) {
     }
 }
 
-Crafty.c('Gone', {
+Crafty.c('Active', {
   init: function () {
+    this.requires('GhostAvatar')
+    this.color('rgb(209, 210, 167)')
+    this.bind('EnterFrame', this._enterFrame)
+    this.one('EndPlayback', this._endRecording)
+  },
+  remove: function () {
+    this.unbind('EnterFrame', this._enterFrame)
+    this.unbind('EndPlayback', this._endRecording)
+  },
+  // TODO: Separate Active logic from GhostAvatar
+  _endRecording: function () {
     this.color('rgb(117, 27, 192)')
-    // this.visible = false
+    this.removeComponent('Active') // seppuku
+  },
+  _enterFrame: function () {
+    if (this._f >= this._previousFrames.length) {
+      this.trigger('EndPlayback')
+      return
+    }
+    var pos = this._previousFrames[this._f++]
+    this.x = pos.x
+    this.y = pos.y
   }
 })
 
 Crafty.c('GhostAvatar', {
   _f: 0,
   init: function () {
-    this.addComponent('Particle, Collision, Persist')
+    this.requires('Quark, Collision, Persist')
     this.color('grey')
     this.bind('ResetGhosts', this.reset)
     this.bind('StartGhosts', this.start)
   },
-  _enterFrame: function () {
-    if (this._f >= this._previousFrames.length) {
-      this.trigger('EndRecording')
-      return
-    }
-    var pos = this._previousFrames[this._f++]
-    this.x = pos.x
-    this.y = pos.y
-  },
-  _endRecording: function () {
-    this.unbind('EnterFrame', this._enterFrame)
-    this.addComponent('Gone')
+  _init: function () {
+    this._f = this._firstFrame
+    this.x = this._previousFrames[this._firstFrame].x
+    this.y = this._previousFrames[this._firstFrame].y
   },
   ghostAvatar: function (firstFrame, previousFrames) {
     this._firstFrame = firstFrame
     this._previousFrames = previousFrames
-    this._f = this._firstFrame
-    this.x = this._previousFrames[this._firstFrame].x
-    this.y = this._previousFrames[this._firstFrame].y
+    this._init()
   },
   reset: function () {
-    this.trigger('EndRecording')
-    this._f = this._firstFrame
-    this.removeComponent('Gone')
-    this.x = this._previousFrames[this._firstFrame].x
-    this.y = this._previousFrames[this._firstFrame].y
+    this.removeComponent('Active')
+    this.color('grey')
+    this._init()
   },
   start: function () {
-    this.color('rgb(209, 210, 167)')
-    this.one('EndRecording', this._endRecording)
-    this.bind('EnterFrame', this._enterFrame)
+    this.addComponent('Active')
   }
 })
+// ## update outside GUI
+var loops = 1
 
-Crafty.scene('Scratch', function (firstFrame, previousFrames) {
+function updateLoopCounters (attempts) {
+  $('.loop-counter').each(function (i, element) {
+    var digits = $(element).children('.digit').toArray()
+    attempts = attempts.toString()
+    for (; attempts.length < 4 ;) {
+      attempts = '0' + attempts
+    }
+    if (attempts.length > 4) {
+      attempts = '10k+'
+    }
+    for (var l = 0; l < 4; ++l) {
+      digits[l].innerHTML = attempts[l]
+    }
+  })
+}
+
+Crafty.scene('Scratch', function () {
+  updateLoopCounters(loops)
+  loops *= 10
   // set timeout for restart of ghosties
   setTimeout(function () {
     // TODO: wait for the first frame available ?
@@ -282,4 +312,4 @@ Crafty.scene('Loop', function () {
   }
 })
 
-Crafty.scene('Loop')
+Crafty.scene('Scratch')
