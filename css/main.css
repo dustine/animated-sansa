@@ -177,15 +177,29 @@ body {
   margin-left: 0.2em;
 }
 
-.timeline-bar {
-  height: 100%;
+.timeline-bar{
+  /*height: 1.7em;*/
 }
 
-.timeline-bar > .canvas {
+.timeline-bar > .timeline{
+  height: 1.7em;
+  position: relative;
+}
+
+.timeline > .canvas {
+  position: absolute;
   display: block;
   margin: 0 auto;
-  /*width: 100%;
-  height: 1.7em;*/
+}
+
+.timeline > #tb-display {
+  z-index: 10;
+  box-shadow: inset 0 0 1em black;
+}
+
+.timeline > #tb-timeline {
+  z-index: 5;
+  background: #eee;
 }
 
 #bottom-gradient {

@@ -1,5 +1,69 @@
 var Crafty = require('craftyjs');
-this.debug = true;
+var DEBUG = true;
+
+/*
+Exterior canvas setup
+*/
+
+var container = $('.timeline');
+var display = container.children('#tb-display')[0];
+var timeline = container.children('#tb-timeline')[0];
+
+$(document).ready(function() {
+  // initialize canvas
+  var WIDTH = container.width();
+  var HEIGHT = container.height();
+
+  display.width = timeline.width = WIDTH;
+  display.height = timeline.height =  HEIGHT;
+  var context = display.getContext('2d');
+
+  context.lineWidth = 1;
+  context.lineCap = 'round';
+  context.strokeStyle = '#666';
+  var maxDivider = 32;
+  for (var divider = 2; divider <= maxDivider; divider *= 2) {
+    for (var place = 1; place < divider; place++) {
+      context.beginPath();
+      context.moveTo(
+        Math.round(WIDTH / divider * place) + 0.5,
+        HEIGHT
+      );
+      var pointerLimit = Math.log(divider) / Math.log(maxDivider * maxDivider);
+      context.lineTo(
+        Math.round(WIDTH / divider * place) + 0.5,
+        Math.round(HEIGHT * pointerLimit +
+          HEIGHT * 1 / 4)
+      );
+      context.stroke();
+    }
+  }
+});
+
+function updateTimebarProgress(current, total, color) {
+  color = color || 'cyan';
+  var context = timeline.getContext('2d');
+  context.clearRect(0, 0, timeline.width, timeline.height);
+  context.fillStyle = color;
+  var length = Math.min(timeline.width * (current / total), timeline.width);
+  context.fillRect(0, 0, length, timeline.height);
+}
+
+function updateLoopCounters (attempts) {
+  $('.loop-counter').each(function(i, element) {
+    var digits = $(element).children('.digit').toArray();
+    attempts = attempts.toString();
+    for (; attempts.length < 4 ;) {
+      attempts = '0' + attempts;
+    }
+    if (attempts.length > 4) {
+      attempts = '10k+';
+    }
+    for (var l = 0; l < 4; ++l) {
+      digits[l].innerHTML = attempts[l];
+    }
+  });
+}
 
 // # CONSTANTS
 // global consts
@@ -7,10 +71,14 @@ var game = $('#animated-sansa');
 var WIDTH = game.width();
 var HEIGHT = game.height();
 var BORDER = 20;
+var SPAWN_BORDER = 100;
 
 // player constants
 var MAX_SPEED = 8;
-var RADIUS = 5;
+var PLAYER_RADIUS = 5;
+
+// tachyons constants
+var TACHYON_SIZE = 4;
 
 Crafty.init(WIDTH, HEIGHT, 'animated-sansa');
 
@@ -99,43 +167,106 @@ Crafty.c('PointerWay', {
 Crafty.c('Quark', {
   init: function() {
     this.requires('2D, DOM, Color, Collision');
-    this.attr({x: WIDTH / 2 - RADIUS, y: HEIGHT / 2 - RADIUS, w: RADIUS * 2,
-      h: RADIUS * 2});
+    this.attr({
+      x: WIDTH / 2 - PLAYER_RADIUS,
+      y: HEIGHT / 2 - PLAYER_RADIUS,
+      w: PLAYER_RADIUS * 2,
+      h: PLAYER_RADIUS * 2
+    });
     this.css('border-radius', '100%');
     this.origin('center');
-    // TODO: Uncomment this, as linter throws a hissy fit about it
-    // this.collision(new Crafty.circle(this._x / 2, this._y / 2, RADIUS))
+    this.collision(
+      new Crafty.circle(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS)
+    );
   }
 });
 
 // # GAME ENTITIES
 // Player particle
-Crafty.c('CurrentAvatar', {
+// Crafty.c('CurrentAvatar', {
+//   init: function() {
+//     this.requires('Quark, Fourway, Persist');
+//     this._previousFrames = [];
+//     this.z = 1000;
+//   }
+// });
+//
+// var player = Crafty.e('CurrentAvatar')
+//   .color('rgb(7, 124, 190)')
+//   .fourway(4)
+//   .onHit('Active', function() {
+//     this.color('red');
+//   }, function() {
+//     this.color('rgb(7, 124, 190)');
+//   });
+
+var player = require('./player.js')(Crafty, BORDER);
+
+Crafty.c('Tachyon', {
   init: function() {
-    this.requires('Quark, Fourway, Persist');
-    this._previousFrames = [];
-    this.z = 1000;
+    this.requires('2D, DOM, Color');
+    this.attr({w: TACHYON_SIZE, h: TACHYON_SIZE});
   }
 });
 
-var player = Crafty.e('CurrentAvatar')
-  .color('rgb(7, 124, 190)')
-  .fourway(4)
-  .onHit('Active', function() {
-    this.color('red');
-  }, function() {
-    this.color('rgb(7, 124, 190)');
-  });
+Crafty.c('WhiteTachyon', {
+  _angle: 0,
+  _speed: 0,
+
+  init: function() {
+    this.requires('Tachyon');
+    this._movement = {
+      x: 0,
+      y: 0
+    };
+    this.color('white');
+  },
+  _enterFrame: function() {
+    // remove far-gone particles
+    if (this._x < -SPAWN_BORDER) {
+      this.destroy();
+      return;
+    }
+    if (this._x > WIDTH - this.w + SPAWN_BORDER) {
+      this.destroy();
+      return;
+    }
+    if (this._y < -SPAWN_BORDER) {
+      this.destroy();
+      return;
+    }
+    if (this._y > HEIGHT - this.h + SPAWN_BORDER) {
+      this.destroy();
+      return;
+    }
+
+    // move the rest
+    this.x += this._movement.x;
+    this.y += this._movement.y;
+  },
+  whiteTachyon: function(x, y, angle, speed) {
+    this._angle = angle;
+    this._speed = speed;
+    this.x = x - Math.round(TACHYON_SIZE / 2);
+    this.y = y - Math.round(TACHYON_SIZE / 2);
+    this._movement.x = Math.cos(angle) * speed;
+    this._movement.y = Math.sin(angle) * speed;
+    this.bind('EnterFrame', this._enterFrame);
+  }
+});
 
 // # DEBUG
 // Debug commands
-if (this.debug) {
-  // player.addComponent('WiredHitBox')
+if (DEBUG) {
+  Crafty('Quark').each(function() {
+    this.addComponent('WiredHitBox');
+  });
+  // player.addComponent('WiredHitBox');
   player.addComponent('Keyboard');
   player.bind('KeyDown', function(ke) {
     if (ke.key === Crafty.keys.R) {
-      this.x = WIDTH / 2 - RADIUS;
-      this.y = HEIGHT / 2 - RADIUS;
+      this.x = WIDTH / 2 - PLAYER_RADIUS;
+      this.y = HEIGHT / 2 - PLAYER_RADIUS;
     } else if (ke.key === Crafty.keys.Q) {
       console.log(this.x, this.y);
     } else if (ke.key === Crafty.keys.C) {
@@ -147,28 +278,28 @@ if (this.debug) {
 }
 
 // ## Mouse movements
-function collision () {
-  if (this._x < BORDER) {
-    this.x = BORDER;
-  } else if (this._x > WIDTH - this.w - BORDER) {
-    this.x = WIDTH - this.w - BORDER;
-  }
+// function collision () {
+//   if (this._x < BORDER) {
+//     this.x = BORDER;
+//   } else if (this._x > WIDTH - this.w - BORDER) {
+//     this.x = WIDTH - this.w - BORDER;
+//   }
+//
+//   if (this._y < BORDER) {
+//     this.y = BORDER;
+//   } else if (this._y > HEIGHT - this.h - BORDER) {
+//     this.y = HEIGHT - this.h - BORDER;
+//   }
+// }
 
-  if (this._y < BORDER) {
-    this.y = BORDER;
-  } else if (this._y > HEIGHT - this.h - BORDER) {
-    this.y = HEIGHT - this.h - BORDER;
-  }
-}
-
-// HACK: adding collision detection to keyboard controls
-player.unbind('EnterFrame', player._enterframe);
-player.bind('EnterFrame', function() {
-  player._enterframe();
-  if (!player.disableControls) {
-    collision.apply(player);
-  }
-});
+// // HACK: adding collision detection to keyboard controls
+// player.unbind('EnterFrame', player._enterframe);
+// player.bind('EnterFrame', function() {
+//   player._enterframe();
+//   if (!player.disableControls) {
+//     collision.apply(player);
+//   }
+// });
 
 // mouse lock mechanism
 game.on('click', function() {
@@ -189,7 +320,7 @@ function lockChange () {
     setTimeout(function() {
       player.addComponent('PointerWay')
         .pointerway(MAX_SPEED)
-        .callback(collision);
+        .callback(player.collision);
     }, 50);
   } else {
     // reset back to keyboard control
@@ -274,24 +405,24 @@ Crafty.c('Active', {
   }
 });
 
+Crafty.c('GameClock', {
+  _dt: 0,
+  _gameEnd: 0,
+  init: function() {},
+  _enterFrame: function(frame) {
+    console.log(Crafty('Tachyon').length);
+    updateTimebarProgress(this._dt, this._gameEnd);
+    this._dt += frame.dt;
+  },
+  gameClock: function(gameEnd) {
+    this._gameEnd = gameEnd;
+    this.bind('EnterFrame', this._enterFrame);
+  },
+});
+
 // ## update outside GUI
 var loops = 1;
-
-function updateLoopCounters (attempts) {
-  $('.loop-counter').each(function(i, element) {
-    var digits = $(element).children('.digit').toArray();
-    attempts = attempts.toString();
-    for (; attempts.length < 4 ;) {
-      attempts = '0' + attempts;
-    }
-    if (attempts.length > 4) {
-      attempts = '10k+';
-    }
-    for (var l = 0; l < 4; ++l) {
-      digits[l].innerHTML = attempts[l];
-    }
-  });
-}
+var crazySpawn;
 
 Crafty.scene('Scratch', function() {
   updateLoopCounters(loops++);
@@ -303,14 +434,32 @@ Crafty.scene('Scratch', function() {
 });
 
 Crafty.scene('Loop', function() {
+  if (DEBUG) {
+    Crafty('Quark').each(function() {
+      this.addComponent('WiredHitBox');
+    });
+  }
   // start player's recording
   player.one('ExitFrame', recordFirstFrame);
   player.bind('ExitFrame', record);
-
+  // start the game clock
+  Crafty.e('GameClock')
+    .gameClock(10 * 1000);
   // and play everyone else's recording
   Crafty.trigger('StartGhosts');
-}, function() {
 
+  crazySpawn = setInterval(function() {
+    Crafty.e('WhiteTachyon')
+      .whiteTachyon(
+        Math.round(WIDTH / 2 + 2),
+        Math.round(HEIGHT / 2 + 2),
+        Math.random() * 2 * Math.PI,
+        4
+      );
+  }, 1000);
+}, function() {
+  // stop the debug spawn omg
+  clearInterval(crazySpawn);
   // stop recording
   player.unbind('ExitFrame', record);
   // save current run's values
@@ -331,4 +480,5 @@ Crafty.scene('GameOver', function() {
   // Crafty.text
 });
 
+// Start the game proper!
 Crafty.scene('Scratch');
