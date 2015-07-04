@@ -147,10 +147,10 @@ body {
 
 .loop-counter {
   font-size: 1.5rem;
-  background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#f5f6f6 100%);
+  background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%, #f5f6f6 100%);
   border-right: solid thick #b8bac6;
   border-radius: 0.5rem 0 0 0.5rem;
-  width: 6em;
+  width: 5.2em;
   padding: 0.1em 0.3em 0.1em 0.1em;
 }
 
@@ -166,15 +166,24 @@ body {
 
 .loop-counter > .digit {
   font-weight: bold;
-  background-color: white;
-  border: solid thin black;
+  background: linear-gradient(to bottom, lightGrey 0%, white 40%, white 60%, lightGrey 100%);
+  border: solid thin #888;
   text-align: center;
   width: 1em;
   float: left;
 }
 
+.loop-counter > .digit:nth-child(2) {
+  border-radius: 0.3em 0 0 0.3em;
+}
+
+.loop-counter > .digit:last-child {
+  border-radius: 0 0.3em 0.3em 0;
+}
+
 .loop-counter > .digit + .digit {
-  margin-left: 0.2em;
+  /*margin-left: 0.2em;*/
+  border-left-style: none;
 }
 
 .timeline-bar{
@@ -193,11 +202,15 @@ body {
 }
 
 .timeline > #tb-display {
-  z-index: 10;
+  z-index: 15;
   box-shadow: inset 0 0 1em black;
 }
 
-.timeline > #tb-timeline {
+.timeline > #tb-hits {
+  z-index: 10;
+}
+
+.timeline > #tb-progress {
   z-index: 5;
   background: #eee;
 }
