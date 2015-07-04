@@ -177,6 +177,8 @@ Crafty.c('WhiteTachyon', {
     this.y = y - Math.round(TACHYON_SIZE / 2);
     this._movement.x = Math.cos(angle) * speed;
     this._movement.y = Math.sin(angle) * speed;
+    this.origin('center');
+    this.rotation = angle / (Math.PI / 180);
     this.bind('EnterFrame', this._enterFrame);
     return this;
   }
@@ -332,7 +334,6 @@ Crafty.scene('Loop', function() {
   // start the game clock
   clock = Crafty.e('GameClock')
     .gameClock(3 * 60 * 1000);
-  console.log(clock);
   // and play everyone else's recording
   Crafty.trigger('StartGhosts');
   // AAND start the spawn nonsence
@@ -377,7 +378,8 @@ Crafty.scene('GameOver', function() {
   Crafty.e('2D, DOM, Text')
     .attr({x: 100, y: 100})
     .text('Game Over')
-    .textColor('#ffffff');
+    .textColor('#ffffff')
+    .textFont('Open Sans');
 });
 
 // # DEBUG

@@ -114,24 +114,25 @@ body {
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, -50%);
+  box-shadow: 0 0 1.2em 0.4em #0088ff;
+  border-radius: 0.5rem;
 }
 
-.game-container > .progress-display {
+/*.game-container > .progress-display {
   margin-top: 1em;
-}
+}*/
 
 .view-frame {
   width: 600px;
   height: 400px;
-  box-shadow: 0 0 1.2em 0.4em #0088ff;
-  border-radius: 0.5em;
+  border-radius: 0.5em 0.5em 0 0;
 }
 
 .progress-display {
   vertical-align: top;
   width: 100%;
   display: table;
-  border-radius: 0.5rem;
+  border-radius: 0 0 0.5rem 0.5em;
   background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%,#f5f6f6 100%);
 }
 
@@ -150,24 +151,29 @@ body {
   background: linear-gradient(to bottom, #f5f6f6 0%,#dbdce2 21%,#b8bac6 49%,#dddfe3 80%, #f5f6f6 100%);
   border-right: solid thick #b8bac6;
   border-radius: 0.5rem 0 0 0.5rem;
-  width: 5.2em;
-  padding: 0.1em 0.3em 0.1em 0.1em;
+  width: 6em;
+  padding: 0.2em 0.3em 0.2em 0.1em;
 }
 
 .loop-counter > .blinkers {
   float: left;
-  width: 1em;
-  height: 100%;
-  pointer-events: none;
-  background-position: center;
-  background-image: url('../img/blinkers.svg');
-  background-repeat: no-repeat;
+  padding-top: 0.1em;
+  margin: 0 0.35em 0 0.35em;
+  text-align: center;
+  background: black;
+  text-shadow: 0 0 0.15em darkGrey;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -o-background-clip: text;
+  color: transparent;
+  vertical-align: middle;
 }
 
 .loop-counter > .digit {
   font-weight: bold;
-  background: linear-gradient(to bottom, lightGrey 0%, white 40%, white 60%, lightGrey 100%);
-  border: solid thin #888;
+  color: white;
+  background: linear-gradient(to bottom, black 0%, grey 40%, darkGrey 60%, black 100%);
+  border: solid thin #222;
   text-align: center;
   width: 1em;
   float: left;
@@ -191,7 +197,7 @@ body {
 }
 
 .timeline-bar > .timeline{
-  height: 1.7em;
+  height: 2em;
   position: relative;
 }
 
@@ -203,7 +209,7 @@ body {
 
 .timeline > #tb-display {
   z-index: 15;
-  box-shadow: inset 0 0 1em black;
+  box-shadow: inset 0 0 1em 0.4em rgba(0, 0, 0, 0.5);;
 }
 
 .timeline > #tb-hits {
@@ -224,6 +230,40 @@ body {
   pointer-events: none;
   z-index: -1000;
 }
+
+/* ==================
+   Icomoon custom CSS
+   ==================
+*/
+@font-face {
+	font-family: 'icomoon';
+	src: url('fonts/icomoon.eot');
+}
+@font-face {
+	font-family: 'icomoon';
+	src: url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SBlgAAAC8AAAAYGNtYXAWKNTjAAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5ZtQUxiQAAAF4AAAA1GhlYWQGmr8xAAACTAAAADZoaGVhB8IDxgAAAoQAAAAkaG10eAoAAAAAAAKoAAAAFGxvY2EAKAB+AAACvAAAAAxtYXhwAAgANgAAAsgAAAAgbmFtZZlKCfsAAALoAAABhnBvc3QAAwAAAAAEcAAAACAAAwMAAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADqLgPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAADAAAAAwAAABwAAQADAAAAHAADAAEAAAAcAAQAOAAAAAoACAACAAIAAQAg6i7//f//AAAAAAAg6i7//f//AAH/4xXWAAMAAQAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAACAAD/wAQAA8AAGQAzAAABLgMjIg4CFTM0PgIzMh4CFwchEQcTFA4CIyIuAic3IRE3HgMzMj4CNSMDeiNVYGo4aruLUGBBcZhWLldPRR2WAWCGJkFxmFYuV09FHZb+oIYjVWBqOGq7i1BgAxomPisXUIu7alaYcUETJDMglgFghv6mVphxQRMkMyCW/qCGJj4rF1CLu2oAAAEAAAABAADn4z6dXw889QALBAAAAAAA0b29WgAAAADRvb1aAAD/wAQAA8AAAAAIAAIAAAAAAAAAAQAAA8D/wAAABAAAAAAABAAAAQAAAAAAAAAAAAAAAAAAAAUEAAAAAAAAAAAAAAACAAAABAAAAAAAAAAACgAUAB4AagABAAAABQA0AAIAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEABwAAAAEAAAAAAAIABwBgAAEAAAAAAAMABwA2AAEAAAAAAAQABwB1AAEAAAAAAAUACwAVAAEAAAAAAAYABwBLAAEAAAAAAAoAGgCKAAMAAQQJAAEADgAHAAMAAQQJAAIADgBnAAMAAQQJAAMADgA9AAMAAQQJAAQADgB8AAMAAQQJAAUAFgAgAAMAAQQJAAYADgBSAAMAAQQJAAoANACkaWNvbW9vbgBpAGMAbwBtAG8AbwBuVmVyc2lvbiAxLjAAVgBlAHIAcwBpAG8AbgAgADEALgAwaWNvbW9vbgBpAGMAbwBtAG8AbwBuaWNvbW9vbgBpAGMAbwBtAG8AbwBuUmVndWxhcgBSAGUAZwB1AGwAYQByaWNvbW9vbgBpAGMAbwBtAG8AbwBuRm9udCBnZW5lcmF0ZWQgYnkgSWNvTW9vbi4ARgBvAG4AdAAgAGcAZQBuAGUAcgBhAHQAZQBkACAAYgB5ACAASQBjAG8ATQBvAG8AbgAuAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-loop2:before {
+	content: "\ea2e";
+}
+
 
 /* ==========================================================================
    Helper classes

@@ -6,10 +6,7 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
         x: 0,
         y: 0
       };
-      this._speed = {
-        x: 0,
-        y: 0
-      };
+      this._mouseSpeed = 0;
       this._mouseMoveAtPointerLock = function(mouseEvent) {
         _this._mouseMovement.x += mouseEvent.movementX;
         _this._mouseMovement.y += mouseEvent.movementY;
@@ -17,33 +14,36 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
       Crafty.addEvent(Crafty.stage.elem, Crafty.stage.elem, 'mousemove',
         this._mouseMoveAtPointerLock);
     },
-
+    pointerway: function(speed) {
+      this.speed(speed);
+      this.bind('EnterFrame', this._enterFrame);
+      return this;
+    },
     remove: function() {
       this.unbind('EnterFrame', this._enterFrame);
       Crafty.removeEvent(Crafty.stage.elem, Crafty.stage.elem, 'mousemove',
         this._mouseMoveAtPointerLock);
     },
-
     _enterFrame: function() {
+      var oldPos = {
+        x: this._x,
+        y: this._y
+      };
       var movX = this._mouseMovement.x;
       var movY = this._mouseMovement.y;
       this._mouseMovement.x = this._mouseMovement.y = 0;
-      if (Math.abs(movX) > MAX_SPEED || Math.abs(movY) > MAX_SPEED) {
-        var newMovX;
-        var newMovY;
-        if (Math.abs(movX) > Math.abs(movY)) {
-          newMovX = Math.sign(movX) * MAX_SPEED;
-          newMovY = movY * (MAX_SPEED / Math.abs(movX));
-        } else {
-          newMovY = Math.sign(movY) * MAX_SPEED;
-          newMovX = movX * (MAX_SPEED / Math.abs(movY));
-        }
-        movX = Math.round(newMovX);
-        movY = Math.round(newMovY);
+      var movAbs = Math.hypot(movX, movY);
+      // HACK: this._speed isn't coeherent with the movement (sin/cos vs absolute)
+      if (movAbs > this._speed.x) {
+        movX = this._speed.x * (movX / movAbs);
+        movY = this._speed.x * (movY / movAbs);
       }
-
       this.x += movX;
       this.y += movY;
+
+      if (this.x !== oldPos.x && this.y !== oldPos.y) {
+        this.trigger('Moved', oldPos);
+      }
 
       if (this._callback) {
         this._callback();
@@ -69,11 +69,7 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
       }
       return this;
     },
-    pointerway: function(speed) {
-      this.speed(speed);
-      this.bind('EnterFrame', this._enterFrame);
-      return this;
-    }
+
   });
 
   Crafty.c('Player', {
@@ -82,12 +78,9 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
       this._previousFrames = [];
       this.z = 1000;
       this.color('rgb(7, 124, 190)');
-      this.fourway(4);
+      // FIXME: Fourway makes diagonals OP
+      this.fourway(MAX_SPEED * 3 / 4);
       this.onHit('Active', function() {
-        //   this.color('red');
-        // }, function() {
-        //   this.color('rgb(7, 124, 190)');
-        // });
         Crafty.scene('GameOver');
       });
       this.onHit('Tachyon', function(hitInfo) {
