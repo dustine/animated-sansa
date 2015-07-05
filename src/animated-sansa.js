@@ -13,10 +13,11 @@ var progress = container.children('#tb-progress')[0];
 $(document).ready(function() {
   // initialize canvas
   var WIDTH = container.width();
-  var HEIGHT = container.height();
+  var HEIGHT = container.parent().height() * 0.8;
+  container.height(HEIGHT);
 
   display.width = hits.width = progress.width = WIDTH;
-  display.height = hits.height = progress.height =  HEIGHT;
+  display.height = hits.height = progress.height = HEIGHT;
   var context = display.getContext('2d');
 
   context.lineWidth = 1;
@@ -70,19 +71,19 @@ function updateTimebarProgress(current, total, color) {
 }
 
 function updateLoopCounters (attempts) {
-  $('.loop-counter').each(function(i, element) {
-    var digits = $(element).children('.digit').toArray();
-    attempts = attempts.toString();
-    for (; attempts.length < 4 ;) {
-      attempts = '0' + attempts;
-    }
-    if (attempts.length > 4) {
-      attempts = '10k+';
-    }
-    for (var l = 0; l < 4; ++l) {
-      digits[l].innerHTML = attempts[l];
-    }
-  });
+  var digits = $('.progress-display > .segmented-counter > .counter')
+    .children('.digit')
+    .toArray();
+  attempts = attempts.toString();
+  for (; attempts.length < 4 ;) {
+    attempts = '0' + attempts;
+  }
+  if (attempts.length > 4) {
+    attempts = '10k+';
+  }
+  for (var l = 0; l < 4; ++l) {
+    digits[l].innerHTML = attempts[l];
+  }
 }
 
 // # CONSTANTS
