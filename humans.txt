@@ -3,13 +3,16 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    Dustine -- Developer -- @DustineAzules
 
 # THANKS
 
-    <name>
+    Spacey
+    Skaia.net folk
+    GitHub
 
 # TECHNOLOGY COLOPHON
 
     CSS3, HTML5
-    Apache Server Configs, jQuery, Modernizr, Normalize.css
+    jQuery, Modernizr, Normalize.css
+    Crafty.js

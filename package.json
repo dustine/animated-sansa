@@ -1,6 +1,6 @@
 {
   "name": "animated-sansa",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A game about avoiding your past self over a crushing future",
   "main": "src/animated-sansa.js",
   "scripts": {
