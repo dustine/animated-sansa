@@ -109,6 +109,8 @@ body {
 }
 
 .game-container {
+  /* TODO: Uncomment this to prevent (most) selection events */
+  /*pointer-events: none;*/
   position: absolute;
   top: 50%;
   left: 50%;
@@ -130,9 +132,13 @@ body {
 }
 
 .game-container > .view-frame {
+  pointer-events: auto;
+  /*width: 800px;
+  height: 450px;*/
   width: 600px;
   height: 400px;
   margin: 0 0.3em 0 0.3em;
+  background: black;
   -webkit-border-radius: 0.5rem;
   -moz-border-radius: 0.5rem;
   border-radius: 0.5em;
@@ -172,7 +178,7 @@ body {
   vertical-align: middle;
 }
 
-.progress-display > .segmented-counter {
+.progress-display > .loop-counter {
   border-right: solid thick #b8bac6;
   width: 6.1em;
 }
@@ -181,15 +187,22 @@ body {
   padding: 0 0.5em
 }
 
+.progress-display > .progress-counter {
+  width: 7.7em;
+}
+
 .segmented-counter {
-  padding: 0.2em 0.3em 0.2em 0.1em;
+  padding: 0.2em 0.3em 0.2em 0.2em;
+}
+
+.segmented-counter > .header,
+.segmented-counter > .footer {
+  margin: 0 0.35em 0 0.35em;
+  text-align: center;
 }
 
 .segmented-counter > .header {
   float: left;
-  padding-top: 0.1em;
-  margin: 0 0.35em 0 0.35em;
-  text-align: center;
 }
 
 .segmented-counter .-inset-shadow {
@@ -201,9 +214,18 @@ body {
   color: transparent;
 }
 
+.segmented-counter > .-icon {
+  padding-top: 0.1em;
+}
+
 .segmented-counter > .counter {
   display: table;
   float: left;
+}
+
+.segmented-counter > .footer {
+  float: right;
+  text-align: center;
 }
 
 .segmented-counter > .counter > .digit {
@@ -228,7 +250,7 @@ body {
   border-left-style: none;
 }
 
-.segmented-counter > .counter.-separate > .digit:nth-last-of-type(3n),
+.segmented-counter > .counter.-separate > .digit.-left,
 .segmented-counter > .counter > .digit:first-of-type {
   -webkit-border-top-left-radius: 0.3em;
   -moz-border-top-left-radius: 0.3em;
@@ -239,7 +261,7 @@ body {
   border-left-style: solid;
 }
 
-.segmented-counter > .counter.-separate > .digit:nth-last-of-type(3n+1),
+.segmented-counter > .counter.-separate > .digit.-right,
 .segmented-counter > .counter > .digit:last-of-type {
   -webkit-border-top-right-radius: 0.3em;
   -moz-border-top-right-radius: 0.3em;
@@ -249,12 +271,9 @@ body {
   border-bottom-right-radius: 0.3em;
 }
 
-.segmented-counter > .counter.-separate > .separator {
+.segmented-counter > .counter.-separate > .separator,
+.segmented-counter > .counter.-separate > .decimal {
   margin: 0 0.1em 0 0.1em;
-}
-
-.segmented-counter > .footer {
-  float: right;
 }
 
 .timeline-bar > .timeline{
