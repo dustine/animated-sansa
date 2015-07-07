@@ -84,6 +84,7 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
         Crafty.scene('GameOver');
       });
       this.onHit('Tachyon', function(hitInfo) {
+        this._tachId = hitInfo[0].obj.id;
         hitInfo.forEach(function(elem) {
           elem.obj.destroy();
         });

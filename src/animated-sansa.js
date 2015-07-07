@@ -1,11 +1,11 @@
 var Crafty = require('craftyjs');
 var DEBUG = false;
 
-/*
-Exterior canvas setup
-*/
-
 $(function() {
+  /*
+  Exterior canvas setup
+  */
+
   // initialize counters
   function addIntegerBorderRadius(length, i, elem) {
     i = length - i - 1;
@@ -83,7 +83,8 @@ $(function() {
     context.clearRect(0, 0, progress.width, progress.height);
     var gradient = context.createLinearGradient(0, 0, 0, progress.height);
     gradient.addColorStop(0, color);
-    gradient.addColorStop(1, 'rgb(0, 159, 181)');
+    gradient.addColorStop(1, 'rgb(0, 199, 205)');
+    // gradient.addColorStop(1, 'rgb(0, 159, 181)');
     context.fillStyle = gradient;
     var length = Math.min(progress.width * (current / total), progress.width);
     context.fillRect(0, 0, length, progress.height);
@@ -103,6 +104,10 @@ $(function() {
       digits[l].innerHTML = attempts[l];
     }
   }
+
+  /*
+  Game setup
+  */
 
   // # CONSTANTS
   // global consts
@@ -143,11 +148,6 @@ $(function() {
     }
   });
 
-  require('./player')(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER);
-  require('./ghosts')(Crafty);
-  require('./tachyons')(Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER,
-    TACHYON_SIZE);
-
   Crafty.c('GameClock', {
     _dt: 0,
     _gameEnd: 0,
@@ -169,61 +169,12 @@ $(function() {
     }
   });
 
-  Crafty.c('Spawner', {
-    _dt: 0,
-    _gameEnd: 0,
-    init: function() {
-      this._deadFrames = 0;
-      this._frames = [];
-      this.requires('2D, Persist');
-    },
-    _enterFrame: function() {
-      if (!this._frames[this._dt]) {
-        this._frames[this._dt] = this._generate();
-      }
-      this._spawn(this._frames[this._dt++]);
-    },
-    _generate: function() {
-      // TODO: Spawn the Tachyons outside the arena
-      // TODO: Regulate the Tachyon spawning to worsen as the game goes on
-      // TODO: More kinds of Tachyons
-      var spawns = [];
-      if (this._deadFrames++ < 4) {
-        return spawns;
-      }
-      this._deadFrames = 0;
-      var randomMax = Math.random() * 5 + 1;
-      for (var i = 0; i < randomMax; i++) {
-        spawns.push([
-          Math.round(WIDTH / 2 + 2),
-          Math.round(HEIGHT / 2 + 2),
-          Math.random() * 2 * Math.PI,
-          4
-        ]);
-      }
-      return spawns;
-    },
-    _spawn: function(frame) {
-      frame.forEach(function(elem) {
-        // TODO: Add more Tachyon types here too
-        Crafty.e('WhiteTachyon')
-          .whiteTachyon(elem[0], elem[1], elem[2], elem[3]);
-      });
-    },
-    spawner: function(gameEnd) {
-      this._gameEnd = gameEnd;
-      return this;
-    },
-    reset: function() {
-      this._dt = 0;
-      this.unbind('EnterFrame');
-      return this;
-    },
-    start: function() {
-      this.bind('EnterFrame', this._enterFrame);
-      return this;
-    }
-  });
+  require('./player')(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER);
+  require('./ghosts')(Crafty);
+  require('./tachyons')(Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER,
+    TACHYON_SIZE);
+  require('./spawner')(Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER,
+    TACHYON_SIZE);
 
   var player = Crafty.e('Player');
 
@@ -316,12 +267,14 @@ $(function() {
     var previousFrames = player._previousFrames || [];
     // reset player
     player._previousFrames = [];
+    var tachId = player._tachId;
+    player._tachId = undefined;
     // restart old ghosts
     Crafty.trigger('ResetGhosts');
     // ready the new ghost
     if (previousFrames.length !== 0) {
       Crafty.e('Ghost')
-        .Ghost(firstFrame, previousFrames);
+        .Ghost(tachId, firstFrame, previousFrames);
     }
   });
 
