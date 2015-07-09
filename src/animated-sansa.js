@@ -379,12 +379,6 @@ $(function() {
     resetTimebar();
     // clear internal logic
     runs = [];
-    // for (var i = 0; i < 10; i++) {
-    //   runs.push({
-    //     score: Math.random() * 5000000,
-    //     time: Math.random() * (15 * 60 * 1000)
-    //   });
-    // }
     loops = 1;
     player = Crafty.e('Player');
     Crafty.scene('Scratch');
@@ -463,7 +457,6 @@ $(function() {
       .css('text-align', 'center');
     Crafty.e('2D, DOM, Text')
       .text(function() {
-        console.log(runs);
         var latest = runs[runs.length - 1];
         return 'Score: ' + latest.score.toFixed(0) + ' (' +
           formatTime(latest.time) + ')';
@@ -474,8 +467,6 @@ $(function() {
       .css('text-align', 'center');
     Crafty.e('2D, DOM, Text')
       .text(function() {
-        console.log(runs);
-        // FIXME: Repeated and homemade time output code
         var bestScore = runs[0];
         bestScore.i = 0;
         var bestTime = runs[0];
@@ -490,9 +481,9 @@ $(function() {
             bestTime.i = i;
           }
         }
-        return 'Best Score: (' + bestScore.i + ') ' +
+        return 'Best Score: (' + (bestScore.i + 1) + ') ' +
           bestScore.score.toFixed(0) + '<br>' +
-          'Best Time: (' + bestTime.i + ') ' + formatTime(bestTime.time);
+          'Best Time: (' + (bestTime.i + 1) + ') ' + formatTime(bestTime.time);
       })
       .textColor('#ffffff')
       .textFont({'family': 'Open Sans', size:'1.5em'})
@@ -535,10 +526,38 @@ $(function() {
       .attr({w: WIDTH, y:40})
       .css('text-align', 'center');
     Crafty.e('2D, DOM, Text')
-      .text('Score: ' + player.score.toFixed(0))
+      .text(function() {
+        var latest = runs[runs.length - 1];
+        return 'Score: ' + latest.score.toFixed(0) + ' (' +
+          formatTime(latest.time) + ')';
+      })
       .textColor('#ffffff')
       .textFont({'family': 'Open Sans', size:'3em'})
       .attr({w: WIDTH, y:240})
+      .css('text-align', 'center');
+    Crafty.e('2D, DOM, Text')
+      .text(function() {
+        var bestScore = runs[0];
+        bestScore.i = 0;
+        var bestTime = runs[0];
+        bestTime.i = 0;
+        for (var i = 0; i < runs.length; i++) {
+          if (runs[i].score > bestScore.score) {
+            bestScore = runs[i];
+            bestScore.i = i;
+          }
+          if (runs[i].time > bestTime.time) {
+            bestTime = runs[i];
+            bestTime.i = i;
+          }
+        }
+        return 'Best Score: (' + (bestScore.i + 1) + ') ' +
+          bestScore.score.toFixed(0) + '<br>' +
+          'Best Time: (' + (bestTime.i + 1) + ') ' + formatTime(bestTime.time);
+      })
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'1.5em'})
+      .attr({w: WIDTH, y:300})
       .css('text-align', 'center');
     Crafty.e('2D, DOM, Mouse, Keyboard, Text')
       .attr({x: (WIDTH - 400) / 2, y: (HEIGHT - 100) / 2 + 100, w:400, h:100})
