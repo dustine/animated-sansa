@@ -7,23 +7,25 @@ $(function() {
   */
 
   // initialize counters
-  function addIntegerBorderRadius(length, i, elem) {
-    i = length - i - 1;
-    if (i % 3 === 0) {
-      $(elem).addClass('-right');
+  (function addCorrectBorderRadiusToDigits() {
+    function addIntegerBorderRadius(length, i, elem) {
+      i = length - i - 1;
+      if (i % 3 === 0) {
+        $(elem).addClass('-right');
+      }
+      if ((i + 1) % 3 === 0) {
+        $(elem).addClass('-left');
+      }
     }
-    if ((i + 1) % 3 === 0) {
-      $(elem).addClass('-left');
-    }
-  }
 
-  $('.counter.-separate').each(function(i, elem) {
-    var $children = $(elem).children();
-    var $digits = $children.filter('.digit');
-    $digits.each(function(i, elem) {
-      addIntegerBorderRadius($digits.length, i, elem);
+    $('.counter.-separate').each(function(i, elem) {
+      var $children = $(elem).children();
+      var $digits = $children.filter('.digit');
+      $digits.each(function(i, elem) {
+        addIntegerBorderRadius($digits.length, i, elem);
+      });
     });
-  });
+  }());
 
   // initialize canvas
   var $container = $('.timeline');
@@ -31,34 +33,37 @@ $(function() {
   var hits = $('#tb-hits')[0];
   var progress = $('#tb-progress')[0];
 
-  var CANVAS_WIDTH = $container.width();
-  var CANVAS_HEIGHT = $container.parent().height() * 0.8;
-  $container.height(CANVAS_HEIGHT);
+  (function initializeTimelineBar() {
+    var CANVAS_WIDTH = $container.width();
+    var CANVAS_HEIGHT = $container.parent().height() * 0.8;
+    $container.height(CANVAS_HEIGHT);
 
-  display.width = hits.width = progress.width = CANVAS_WIDTH;
-  display.height = hits.height = progress.height = CANVAS_HEIGHT;
-  var context = display.getContext('2d');
+    display.width = hits.width = progress.width = CANVAS_WIDTH;
+    display.height = hits.height = progress.height = CANVAS_HEIGHT;
+    var context = display.getContext('2d');
 
-  context.lineWidth = 1;
-  context.lineCap = 'round';
-  context.strokeStyle = '#666';
-  var maxDivider = 32;
-  for (var divider = 2; divider <= maxDivider; divider *= 2) {
-    for (var place = 1; place < divider; place++) {
-      context.beginPath();
-      context.moveTo(
-        Math.round(CANVAS_WIDTH / divider * place) + 0.5,
-        CANVAS_HEIGHT
-      );
-      var pointerLimit = Math.log(divider) / Math.log(maxDivider * maxDivider);
-      context.lineTo(
-        Math.round(CANVAS_WIDTH / divider * place) + 0.5,
-        Math.round(CANVAS_HEIGHT * pointerLimit +
-          CANVAS_HEIGHT * 1 / 4)
-      );
-      context.stroke();
+    context.lineWidth = 1;
+    context.lineCap = 'round';
+    context.strokeStyle = '#666';
+    var maxDivider = 32;
+    for (var divider = 2; divider <= maxDivider; divider *= 2) {
+      for (var place = 1; place < divider; place++) {
+        context.beginPath();
+        context.moveTo(
+          Math.round(CANVAS_WIDTH / divider * place) + 0.5,
+          CANVAS_HEIGHT
+        );
+        var pointerLimit = Math.log(divider) /
+          Math.log(maxDivider * maxDivider);
+        context.lineTo(
+          Math.round(CANVAS_WIDTH / divider * place) + 0.5,
+          Math.round(CANVAS_HEIGHT * pointerLimit +
+            CANVAS_HEIGHT * 1 / 4)
+        );
+        context.stroke();
+      }
     }
-  }
+  }());
 
   function updateTimebarHits(current, total, color) {
     color = color || 'red';
@@ -90,7 +95,14 @@ $(function() {
     context.fillRect(0, 0, length, progress.height);
   }
 
-  function updateLoopCounters (attempts) {
+  function resetTimebar() {
+    var context = progress.getContext('2d');
+    context.clearRect(0, 0, progress.width, progress.height);
+    context = hits.getContext('2d');
+    context.clearRect(0, 0, hits.width, hits.height);
+  }
+
+  function updateLoopCounters(attempts) {
     var digits = $('.loop-counter .digit')
       .toArray();
     attempts = attempts.toString();
@@ -105,6 +117,21 @@ $(function() {
     }
   }
 
+  function updateScoreCounters(score) {
+    var digits = $('.score-display .digit')
+      .toArray();
+    score = score.toFixed(0).toString();
+    for (; score.length < digits.length ;) {
+      score = '0' + score;
+    }
+    if (score.length > digits.length) {
+      throw 'score too bong, ' + score;
+    }
+    for (var l = 0; l < digits.length; ++l) {
+      digits[l].innerHTML = score[l];
+    }
+  }
+
   /*
   Game setup
   */
@@ -116,6 +143,7 @@ $(function() {
   var HEIGHT = game.height();
   var BORDER = 20;
   var SPAWN_BORDER = 100;
+  var GAME_LENGTH = 3 * 60 * 1000;
 
   // player constants
   var MAX_SPEED = 8;
@@ -124,12 +152,50 @@ $(function() {
   // tachyons constants
   var TACHYON_SIZE = 4;
 
+  function inGameState() {
+    return !Crafty.isPaused() &&
+      ['Scratch', 'Loop'].indexOf(Crafty._current) !== -1;
+  }
+
   Crafty.init(WIDTH, HEIGHT, 'animated-sansa');
 
-  // TODO(Dustine): Scenes
-  Crafty.background('black');
+  Crafty.settings.modify('autoPause', true);
+
+  Crafty.bind('Pause', function() {
+    if (!inGameState()) {
+      return;
+    }
+    Crafty.e('2D, DOM, Text, PauseScreen')
+      .attr({w: WIDTH, y: 40, z:2100})
+      .css('text-align', 'center')
+      .text('Paused')
+      .textColor('rgba(0, 0, 0, 0.5)')
+      .textFont({family:'Open Sans', size:'10em'});
+    Crafty.e('2D, DOM, Color, PauseScreen')
+      .attr({x:0, y:0, w:WIDTH, h:HEIGHT, z:2000})
+      .color('rgba(128, 128, 128, 0.5)');
+    // forces to redraw the pause screen
+    Crafty.trigger('RenderScene');
+  });
+  Crafty.bind('Unpause', function() {
+    Crafty('PauseScreen').each(function() {
+      this.destroy();
+    });
+  });
+  Crafty.bind('NewScore', function(score) {
+    updateScoreCounters(score);
+  });
+  Crafty.bind('Hit', function() {
+    updateTimebarHits(clock._dt, clock._gameEnd);
+  });
 
   // # CUSTOM COMPONENTS
+  require('./player')(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER);
+  require('./ghosts')(Crafty);
+  require('./tachyons')(Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER,
+    TACHYON_SIZE);
+  require('./spawner')(Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER,
+    TACHYON_SIZE);
 
   Crafty.c('Quark', {
     init: function() {
@@ -151,16 +217,28 @@ $(function() {
   Crafty.c('GameClock', {
     _dt: 0,
     _gameEnd: 0,
+    _dead: false,
     init: function() {
-      this.requires('2D');
+      this.requires('2D, Delay');
+    },
+    destroy: function() {
+      this._dead = true;
+      this.cancelDelay(this._winGame);
     },
     _enterFrame: function(frame) {
+      if (this._dead) {
+        return;
+      }
       updateTimebarProgress(this._dt, this._gameEnd);
       this._dt += frame.dt;
+    },
+    _winGame: function() {
+      Crafty.scene('GameWon');
     },
     gameClock: function(gameEnd) {
       this._gameEnd = gameEnd;
       this.bind('EnterFrame', this._enterFrame);
+      this.delay(this._winGame, gameEnd);
       return this;
     },
     reset: function() {
@@ -169,17 +247,13 @@ $(function() {
     }
   });
 
-  require('./player')(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER);
-  require('./ghosts')(Crafty);
-  require('./tachyons')(Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER,
-    TACHYON_SIZE);
-  require('./spawner')(Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER,
-    TACHYON_SIZE);
-
-  var player = Crafty.e('Player');
+  var player;
 
   // mouse lock mechanism
   game.on('click', function() {
+    if (!inGameState()) {
+      return;
+    }
     this.requestPointerLock();
   });
 
@@ -207,6 +281,7 @@ $(function() {
   $(document).on('pointerlockchange', lockChange);
   $(document).on('pointerlockerror', lockError);
 
+  // FIXME: This should be in player.js
   // ## Recording location
   function recordFirstFrame (frame) {
     this._firstFrame = frame.frame;
@@ -221,16 +296,56 @@ $(function() {
   }
 
   // ## update outside GUI
+  // TODO(Dustine): Scenes
+  Crafty.background('black');
+
   var loops = 1;
   var clock;
   var spawner;
 
+  Crafty.scene('Menu', function() {
+    Crafty.e('2D, DOM, Text')
+      .text('Animated Sansa')
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'6em'})
+      .attr({w: WIDTH, y:40})
+      .css('text-align', 'center');
+    // Crafty.e('2D, DOM, Text')
+    //   .text('Score: ' + player.score)
+    //   .textColor('#ffffff')
+    //   .textFont({'family': 'Open Sans', size:'3em'})
+    //   .attr({w: WIDTH, y:240})
+    //   .css('text-align', 'center');
+    Crafty.e('2D, DOM, Mouse, Keyboard, Text')
+      .attr({x: (WIDTH - 400) / 2, y: (HEIGHT - 100) / 2 + 100, w:400, h:100})
+      // TODO: Move this to the CSS (hint: Components == Classes)
+      .css({
+        'background': 'linear-gradient(to bottom, skyBlue 0%, cyan 100%)',
+        'border-radius': '0.5em'
+      })
+      .bind('Click', function() {
+        Crafty.scene('Start');
+      })
+      .bind('KeyDown', function() {
+        if (this.isDown('ENTER')) {
+          Crafty.scene('Start');
+        }
+      })
+      .text('Start')
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'4em'})
+      .css('text-align', 'center')
+      .css('line-height', '' + 100 + 'px');
+  });
+
   Crafty.scene('Start', function() {
+    // start the game!
+    // clear display
+    resetTimebar();
+    // clear internal logic
     loops = 1;
-    updateLoopCounters(loops++);
-    setTimeout(function() {
-      Crafty.scene('Loop');
-    }, 2000);
+    player = Crafty.e('Player');
+    Crafty.scene('Scratch');
   }, function() {
     spawner = Crafty.e('Spawner')
       // TODO: Make this a global constant
@@ -248,16 +363,18 @@ $(function() {
     player.bind('ExitFrame', record);
     // start the game clock
     clock = Crafty.e('GameClock')
-      .gameClock(3 * 60 * 1000);
+      .gameClock(GAME_LENGTH);
     // and play everyone else's recording
-    Crafty.trigger('StartGhosts');
+    Crafty.trigger('StartLoop');
     // AAND start the spawn nonsence
     spawner.start();
   }, function() {
     // mark the hit
     // TODO Prevent access to internal variables
-    updateTimebarHits(clock._dt, clock._gameEnd);
-    clock.reset();
+    // updateTimebarProgress(clock._dt, clock._gameEnd);
+    clock.destroy();
+    // updateTimebarHits(clock._dt, clock._gameEnd);
+    // clock.reset();
     // stop the spawner
     spawner.reset();
     // stop recording
@@ -270,7 +387,7 @@ $(function() {
     var tachId = player._tachId;
     player._tachId = undefined;
     // restart old ghosts
-    Crafty.trigger('ResetGhosts');
+    Crafty.trigger('EndLoop');
     // ready the new ghost
     if (previousFrames.length !== 0) {
       Crafty.e('Ghost')
@@ -281,22 +398,94 @@ $(function() {
   Crafty.scene('Scratch', function() {
     updateLoopCounters(loops++);
     // set timeout for restart of ghosties
-    setTimeout(function() {
+    Crafty.e('Delay')
+      .delay(function() {
       // TODO: wait for the first frame available ?
       Crafty.scene('Loop');
     }, 2000);
   });
 
   Crafty.scene('GameOver', function() {
-    // Crafty.text
+    // cleanup
     Crafty('Quark').each(function() {
       this.destroy();
     });
+    spawner.destroy();
+    // show gameover screen
     Crafty.e('2D, DOM, Text')
-      .attr({x: 100, y: 100})
       .text('Game Over')
       .textColor('#ffffff')
-      .textFont('Open Sans');
+      .textFont({'family': 'Open Sans', size:'10em'})
+      .attr({w: WIDTH, y:40})
+      .css('text-align', 'center');
+    Crafty.e('2D, DOM, Text')
+      .text('Score: ' + player.score.toFixed(0))
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'3em'})
+      .attr({w: WIDTH, y:240})
+      .css('text-align', 'center');
+    Crafty.e('2D, DOM, Mouse, Keyboard, Text')
+      .attr({x: (WIDTH - 400) / 2, y: (HEIGHT - 100) / 2 + 100, w:400, h:100})
+      // TODO: Move this to the CSS (hint: Components == Classes)
+      .css({
+        'background': 'linear-gradient(to bottom, blue 0%, darkBlue 100%)',
+        'border-radius': '0.5em'
+      })
+      .bind('Click', function() {
+        Crafty.scene('Start');
+      })
+      .bind('KeyDown', function() {
+        if (this.isDown('ENTER')) {
+          Crafty.scene('Start');
+        }
+      })
+      .text('Restart')
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'4em'})
+      .css('text-align', 'center')
+      .css('line-height', '' + 100 + 'px');
+  });
+
+  Crafty.scene('GameWon', function() {
+    // cleanup
+    Crafty('Quark').each(function() {
+      this.destroy();
+    });
+    spawner.destroy();
+    updateTimebarProgress(1, 1);
+    // show gamewon screen
+    Crafty.e('2D, DOM, Text')
+      .text('You win!')
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'10em'})
+      .attr({w: WIDTH, y:40})
+      .css('text-align', 'center');
+    Crafty.e('2D, DOM, Text')
+      .text('Score: ' + player.score.toFixed(0))
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'3em'})
+      .attr({w: WIDTH, y:240})
+      .css('text-align', 'center');
+    Crafty.e('2D, DOM, Mouse, Keyboard, Text')
+      .attr({x: (WIDTH - 400) / 2, y: (HEIGHT - 100) / 2 + 100, w:400, h:100})
+      // TODO: Move this to the CSS (hint: Components == Classes)
+      .css({
+        'background': 'linear-gradient(to bottom, skyBlue 0%, cyan 100%)',
+        'border-radius': '0.5em'
+      })
+      .bind('Click', function() {
+        Crafty.scene('Start');
+      })
+      .bind('KeyDown', function() {
+        if (this.isDown('ENTER')) {
+          Crafty.scene('Start');
+        }
+      })
+      .text('Restart')
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'4em'})
+      .css('text-align', 'center')
+      .css('line-height', '' + 100 + 'px');
   });
 
   // # DEBUG
@@ -322,5 +511,5 @@ $(function() {
   }
 
   // Start the game proper!
-  Crafty.scene('Start');
+  Crafty.scene('Menu');
 });

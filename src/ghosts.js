@@ -5,8 +5,8 @@ module.exports = function(Crafty) {
     init: function() {
       this.requires('Quark, Persist, Tween');
       this.color('grey');
-      this.bind('ResetGhosts', this.reset);
-      this.bind('StartGhosts', this.start);
+      this.bind('StartLoop', this.start);
+      this.bind('EndLoop', this.reset);
       this.bind('PlaybackEnd', this._playbackEnd);
       // this.bind('TweenEnd', function() {
       //   console.log('end tween');

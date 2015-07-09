@@ -1,3 +1,10 @@
+function scale(val, from, to) {
+  return (val - from[0]) / (from[1] - from[0]) * (to[1] - to[0]) + to[0];
+}
+
+var MAX_DISTANCE = 100;
+var MAX_SCORE = 50;
+
 module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
   Crafty.c('PointerWay', {
     init: function() {
@@ -84,12 +91,17 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
         Crafty.scene('GameOver');
       });
       this.onHit('Tachyon', function(hitInfo) {
+        Crafty.trigger('Hit');
+        this.score = 0;
+        Crafty.trigger('NewScore', this.score);
         this._tachId = hitInfo[0].obj.id;
         hitInfo.forEach(function(elem) {
           elem.obj.destroy();
         });
         Crafty.scene('Scratch');
       });
+      this.score = 0;
+      Crafty.trigger('NewScore', this.score);
 
       // HACK: adding collision detection to keyboard controls
       this.unbind('EnterFrame', this._enterframe);
@@ -98,6 +110,13 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
         if (!this.disableControls) {
           this._collision();
         }
+      });
+
+      this.bind('StartLoop', function() {
+        this.bind('ExitFrame', this._score);
+      });
+      this.bind('EndLoop', function() {
+        this.unbind('ExitFrame', this._score);
       });
     },
     _collision: function() {
@@ -111,6 +130,35 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
         this.y = BORDER;
       } else if (this._y > HEIGHT - this.h - BORDER) {
         this.y = HEIGHT - this.h - BORDER;
+      }
+    },
+    _score: function() {
+      // get min distance
+      var min = [];
+      var _this = this;
+      Crafty('WhiteTachyon').each(function() {
+        // TODO: Consider centers, not origin (offside to the top left)
+        min.push(Math.hypot(
+            _this.x + _this.w / 2 - this.x - this.w / 2,
+            _this.y + _this.h / 2 - this.y - this.h / 2
+          ) - _this.w - this.w);
+      });
+      min = min.reduce(function(prev, cur) {
+        return Math.min(prev, cur);
+      }, +Infinity);
+      if (min > MAX_DISTANCE) {
+        return;
+      }
+      min = min < 0 ? 0 : min;
+      // turn it into a cumulative score
+      // TODO: make it cummulative
+      var score = MAX_DISTANCE - min;
+      score *= score;
+      score = scale(score, [0, MAX_DISTANCE * MAX_DISTANCE], [0, MAX_SCORE]);
+      if (score !== 0) {
+        this.score += score;
+        Crafty.trigger('NewScore', this.score);
+        // Crafty.trigger('NewScore', score);
       }
     },
     enableKeyboard: function() {
