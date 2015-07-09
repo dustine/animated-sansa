@@ -458,8 +458,8 @@ $(function() {
     Crafty.e('2D, DOM, Text')
       .text(function() {
         var latest = runs[runs.length - 1];
-        return 'Score: ' + latest.score.toFixed(0) + ' (' +
-          formatTime(latest.time) + ')';
+        return 'Score: ' + latest.score.toFixed(0) + ', over ' +
+          formatTime(latest.time);
       })
       .textColor('#ffffff')
       .textFont({'family': 'Open Sans', size:'3em'})
@@ -481,9 +481,10 @@ $(function() {
             bestTime.i = i;
           }
         }
-        return 'Best Score: (' + (bestScore.i + 1) + ') ' +
+        return 'Best Score: Attempt ' + (bestScore.i + 1) + ', ' +
           bestScore.score.toFixed(0) + '<br>' +
-          'Best Time: (' + (bestTime.i + 1) + ') ' + formatTime(bestTime.time);
+          'Best Time: Attempt ' + (bestTime.i + 1) + ', ' +
+          formatTime(bestTime.time);
       })
       .textColor('#ffffff')
       .textFont({'family': 'Open Sans', size:'1.5em'})
@@ -528,8 +529,8 @@ $(function() {
     Crafty.e('2D, DOM, Text')
       .text(function() {
         var latest = runs[runs.length - 1];
-        return 'Score: ' + latest.score.toFixed(0) + ' (' +
-          formatTime(latest.time) + ')';
+        return 'Score: ' + latest.score.toFixed(0) + ', over ' +
+          formatTime(latest.time);
       })
       .textColor('#ffffff')
       .textFont({'family': 'Open Sans', size:'3em'})
@@ -551,9 +552,10 @@ $(function() {
             bestTime.i = i;
           }
         }
-        return 'Best Score: (' + (bestScore.i + 1) + ') ' +
+        return 'Best Score: Attempt ' + (bestScore.i + 1) + ', ' +
           bestScore.score.toFixed(0) + '<br>' +
-          'Best Time: (' + (bestTime.i + 1) + ') ' + formatTime(bestTime.time);
+          'Best Time: Attempt ' + (bestTime.i + 1) + ', ' +
+          formatTime(bestTime.time);
       })
       .textColor('#ffffff')
       .textFont({'family': 'Open Sans', size:'1.5em'})
