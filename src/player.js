@@ -1,4 +1,4 @@
-function scale(val, from, to) {
+function scale (val, from, to) {
   return (val - from[0]) / (from[1] - from[0]) * (to[1] - to[0]) + to[0];
 }
 
@@ -88,10 +88,11 @@ module.exports = function(Crafty, WIDTH, HEIGHT, MAX_SPEED, BORDER) {
       // FIXME: Fourway makes diagonals OP
       this.fourway(MAX_SPEED * 3 / 4);
       this.onHit('Active', function() {
+        Crafty.trigger('Hit', this.score);
         Crafty.scene('GameOver');
       });
       this.onHit('Tachyon', function(hitInfo) {
-        Crafty.trigger('Hit');
+        Crafty.trigger('Hit', this.score);
         this.score = 0;
         Crafty.trigger('NewScore', this.score);
         this._tachId = hitInfo[0].obj.id;

@@ -1,6 +1,34 @@
 var Crafty = require('craftyjs');
 var DEBUG = false;
 
+// HACK: Homemade time formattation, oh my
+function formatTime(ms) {
+  function cut(number, fraction) {
+    number /= fraction;
+    return Math.floor(number);
+  }
+  // milliseconds
+  var result = ' s';
+  result = (ms % 1000).toFixed(0) + result;
+  while (result.length < 5) {
+    result = '0' + result;
+  }
+  result = '.' + result;
+  ms = cut(ms, 1000);
+  // seconds
+  result = ms % 60 + result;
+  if (ms < 60) {
+    return result;
+  }
+  while (result.length < 8) {
+    result = '0' + result;
+  }
+  result = ':' + result;
+  ms = cut(ms, 60);
+  // minutes
+  return ms + result;
+}
+
 $(function() {
   /*
   Exterior canvas setup
@@ -152,6 +180,9 @@ $(function() {
   // tachyons constants
   var TACHYON_SIZE = 4;
 
+  // statistics
+  var runs = [];
+
   function inGameState() {
     return !Crafty.isPaused() &&
       ['Scratch', 'Loop'].indexOf(Crafty._current) !== -1;
@@ -185,7 +216,11 @@ $(function() {
   Crafty.bind('NewScore', function(score) {
     updateScoreCounters(score);
   });
-  Crafty.bind('Hit', function() {
+  Crafty.bind('Hit', function(score) {
+    runs.push({
+      score: score,
+      time: clock._dt
+    });
     updateTimebarHits(clock._dt, clock._gameEnd);
   });
 
@@ -343,6 +378,13 @@ $(function() {
     // clear display
     resetTimebar();
     // clear internal logic
+    runs = [];
+    // for (var i = 0; i < 10; i++) {
+    //   runs.push({
+    //     score: Math.random() * 5000000,
+    //     time: Math.random() * (15 * 60 * 1000)
+    //   });
+    // }
     loops = 1;
     player = Crafty.e('Player');
     Crafty.scene('Scratch');
@@ -405,6 +447,7 @@ $(function() {
     }, 2000);
   });
 
+  // TODO: Join the common logic between GameOver and GameWon
   Crafty.scene('GameOver', function() {
     // cleanup
     Crafty('Quark').each(function() {
@@ -419,13 +462,44 @@ $(function() {
       .attr({w: WIDTH, y:40})
       .css('text-align', 'center');
     Crafty.e('2D, DOM, Text')
-      .text('Score: ' + player.score.toFixed(0))
+      .text(function() {
+        console.log(runs);
+        var latest = runs[runs.length - 1];
+        return 'Score: ' + latest.score.toFixed(0) + ' (' +
+          formatTime(latest.time) + ')';
+      })
       .textColor('#ffffff')
       .textFont({'family': 'Open Sans', size:'3em'})
       .attr({w: WIDTH, y:240})
       .css('text-align', 'center');
+    Crafty.e('2D, DOM, Text')
+      .text(function() {
+        console.log(runs);
+        // FIXME: Repeated and homemade time output code
+        var bestScore = runs[0];
+        bestScore.i = 0;
+        var bestTime = runs[0];
+        bestTime.i = 0;
+        for (var i = 0; i < runs.length; i++) {
+          if (runs[i].score > bestScore.score) {
+            bestScore = runs[i];
+            bestScore.i = i;
+          }
+          if (runs[i].time > bestTime.time) {
+            bestTime = runs[i];
+            bestTime.i = i;
+          }
+        }
+        return 'Best Score: (' + bestScore.i + ') ' +
+          bestScore.score.toFixed(0) + '<br>' +
+          'Best Time: (' + bestTime.i + ') ' + formatTime(bestTime.time);
+      })
+      .textColor('#ffffff')
+      .textFont({'family': 'Open Sans', size:'1.5em'})
+      .attr({w: WIDTH, y:300})
+      .css('text-align', 'center');
     Crafty.e('2D, DOM, Mouse, Keyboard, Text')
-      .attr({x: (WIDTH - 400) / 2, y: (HEIGHT - 100) / 2 + 100, w:400, h:100})
+      .attr({x: (WIDTH - 400) / 2, y: (HEIGHT - 100) / 2 + 200, w:400, h:100})
       // TODO: Move this to the CSS (hint: Components == Classes)
       .css({
         'background': 'linear-gradient(to bottom, blue 0%, darkBlue 100%)',
