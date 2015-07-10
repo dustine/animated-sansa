@@ -1,0 +1,193 @@
+.game-container {
+  /* TODO: Uncomment this to prevent (most) selection events */
+  /*pointer-events: none;*/
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  -webkit-box-shadow: 0 0 1.2em 0.4em #0088ff;
+  -moz-box-shadow: 0 0 1.2em 0.4em #0088ff;
+  box-shadow: 0 0 1.2em 0.4em #0088ff;
+  -webkit-border-radius: 0.5rem;
+  -moz-border-radius: 0.5rem;
+  border-radius: 0.5rem;
+  background: rgb(245,246,246);
+}
+
+.game-container > .score-display {
+  -webkit-border-radius: 0.5em 0.5em 0 0;
+  -moz-border-radius: 0.5em 0.5em 0 0;
+  border-radius: 0.5em 0.5em 0 0;
+}
+
+.game-container > .view-frame {
+  pointer-events: auto;
+  /*width: 800px;
+  height: 450px;*/
+  width: 1000px;
+  height: 600px;
+  margin: 0 0.3em 0 0.3em;
+  background: black;
+  -webkit-border-radius: 0.5rem;
+  -moz-border-radius: 0.5rem;
+  border-radius: 0.5em;
+}
+
+.game-container > .progress-display {
+  -webkit-border-radius: 0 0 0.5em 0.5em;
+  -moz-border-radius: 0 0 0.5em 0.5em;
+  border-radius: 0 0 0.5em 0.5em;
+}
+
+.game-container > .score-display,
+.game-container > .progress-display {
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f5f6f6+0,dbdce2+21,b8bac6+49,dddfe3+80,f5f6f6+100 */
+  background: rgb(245,246,246); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(245,246,246,1) 0%, rgba(219,220,226,1) 21%, rgba(184,186,198,1) 49%, rgba(221,223,227,1) 80%, rgba(245,246,246,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(245,246,246,1)), color-stop(21%,rgba(219,220,226,1)), color-stop(49%,rgba(184,186,198,1)), color-stop(80%,rgba(221,223,227,1)), color-stop(100%,rgba(245,246,246,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(245,246,246,1) 0%,rgba(219,220,226,1) 21%,rgba(184,186,198,1) 49%,rgba(221,223,227,1) 80%,rgba(245,246,246,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f6f6', endColorstr='#f5f6f6',GradientType=0 ); /* IE6-9 */
+}
+
+.progress-display {
+  vertical-align: top;
+  width: 100%;
+  display: table;
+  -webkit-border-radius: 0 0 0.5rem 0.5em;
+  -moz-border-radius: 0 0 0.5rem 0.5em;
+  border-radius: 0 0 0.5rem 0.5em;
+}
+
+.progress-display > .segmented-counter,
+.progress-display > .timeline-bar  {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.progress-display > .loop-counter {
+  border-right: solid thick #b8bac6;
+  width: 6.1em;
+}
+
+.progress-display > .timeline-bar {
+  padding: 0 0.5em
+}
+
+.progress-display > .progress-counter {
+  width: 7.7em;
+}
+
+.segmented-counter {
+  padding: 0.2em 0.3em 0.2em 0.2em;
+}
+
+.segmented-counter > .header,
+.segmented-counter > .footer {
+  margin: 0 0.35em 0 0.35em;
+  text-align: center;
+}
+
+.segmented-counter > .header {
+  float: left;
+}
+
+.segmented-counter .-inset-shadow {
+  background: black;
+  text-shadow: 0 0 0.15em darkGrey;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -o-background-clip: text;
+  color: transparent;
+}
+
+.segmented-counter > .-icon {
+  padding-top: 0.1em;
+}
+
+.segmented-counter > .counter {
+  display: table;
+  float: left;
+}
+
+.segmented-counter > .footer {
+  float: right;
+  text-align: center;
+}
+
+.segmented-counter > .counter > .digit {
+  display: table-cell;
+  font-weight: bold;
+  color: white;
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,808080+40,a9a9a9+60,000000+100 */
+  background: rgb(0,0,0); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(0,0,0,1) 0%, rgba(128,128,128,1) 40%, rgba(169,169,169,1) 60%, rgba(0,0,0,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,1)), color-stop(40%,rgba(128,128,128,1)), color-stop(60%,rgba(169,169,169,1)), color-stop(100%,rgba(0,0,0,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(0,0,0,1) 0%,rgba(128,128,128,1) 40%,rgba(169,169,169,1) 60%,rgba(0,0,0,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(0,0,0,1) 0%,rgba(128,128,128,1) 40%,rgba(169,169,169,1) 60%,rgba(0,0,0,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(0,0,0,1) 0%,rgba(128,128,128,1) 40%,rgba(169,169,169,1) 60%,rgba(0,0,0,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(0,0,0,1) 0%,rgba(128,128,128,1) 40%,rgba(169,169,169,1) 60%,rgba(0,0,0,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+  border: solid thin #222;
+  text-align: center;
+  width: 1em;
+}
+
+.segmented-counter > .counter > .digit + .digit {
+  border-left-style: none;
+}
+
+.segmented-counter > .counter.-separate > .digit.-left,
+.segmented-counter > .counter > .digit:first-of-type {
+  -webkit-border-top-left-radius: 0.3em;
+  -moz-border-top-left-radius: 0.3em;
+  border-top-left-radius: 0.3em;
+  -webkit-border-bottom-left-radius: 0.3em;
+  -moz-border-bottom-left-radius: 0.3em;
+  border-bottom-left-radius: 0.3em;
+  border-left-style: solid;
+}
+
+.segmented-counter > .counter.-separate > .digit.-right,
+.segmented-counter > .counter > .digit:last-of-type {
+  -webkit-border-top-right-radius: 0.3em;
+  -moz-border-top-right-radius: 0.3em;
+  border-top-right-radius: 0.3em;
+  -webkit-border-bottom-right-radius: 0.3em;
+  -moz-border-bottom-right-radius: 0.3em;
+  border-bottom-right-radius: 0.3em;
+}
+
+.segmented-counter > .counter.-separate > .separator,
+.segmented-counter > .counter.-separate > .decimal {
+  margin: 0 0.1em 0 0.1em;
+}
+
+.timeline-bar > .timeline{
+  position: relative;
+}
+
+.timeline > .canvas {
+  position: absolute;
+  display: block;
+  margin: 0 auto;
+}
+
+.timeline > #tb-display {
+  z-index: 15;
+  -webkit-box-shadow: inset 0 0 1em 0.4em rgba(0, 0, 0, 0.5);;
+  -moz-box-shadow: inset 0 0 1em 0.4em rgba(0, 0, 0, 0.5);;
+  box-shadow: inset 0 0 1em 0.4em rgba(0, 0, 0, 0.5);;
+}
+
+.timeline > #tb-hits {
+  z-index: 10;
+}
+
+.timeline > #tb-progress {
+  z-index: 5;
+  background: #eee;
+}
