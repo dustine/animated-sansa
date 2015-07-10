@@ -26,6 +26,28 @@
   "devDependencies": {
     "craftyjs": "^0.6.3",
     "opnr": "^1.0.4",
+    "standard": "^4.5.2",
     "uglify-js": "^2.4.23"
+  },
+  "jshintConfig": {
+    "bitwise": true,
+    "curly": true,
+    "forin": true,
+    "freeze": true,
+    "futurehostile": true,
+    "latedef": "nofunc",
+    "maxcomplexity": 10,
+    "maxdepth": 4,
+    "noarg": true,
+    "nocomma": true,
+    "nonbsp": true,
+    "nonew": true,
+    "singleGroups": true,
+    "undef": true,
+    "unused": true,
+    "asi": true,
+    "browser": true,
+    "node": true,
+    "jquery": true
   }
 }
