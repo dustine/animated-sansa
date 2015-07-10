@@ -1,8 +1,8 @@
 /* eslint-env node */
 
-function scale (val, from, to) {
-  return (val - from[0]) / (from[1] - from[0]) * (to[1] - to[0]) + to[0]
-}
+// function scale (val, from, to) {
+//   return (val - from[0]) / (from[1] - from[0]) * (to[1] - to[0]) + to[0]
+// }
 
 function angleBetween (origin, dest) {
   // NOTE: y axis is flipped
@@ -207,7 +207,7 @@ module.exports = function (Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER) {
         return []
       }
       // reset spawner counter
-      this._spawnFrame = this._dt + scale(Math.random(), [0, 1] , [4,]) 
+      // this._spawnFrame = this._dt + scale(Math.random(), [0, 1] , [4,])
       var spawns = pickTypes()
       spawns.forEach(pickSide)
       return spawns

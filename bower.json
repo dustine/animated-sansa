@@ -1,0 +1,25 @@
+{
+  "name": "animated-sansa",
+  "version": "0.2.0",
+  "homepage": "https://github.com/dustine/animated-sansa",
+  "authors": [
+    "Dustine Camacho <dustine.camacho@gmail.com>"
+  ],
+  "description": "An arcade-like game about avoiding your past from reaching your future",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "crafty": "~0.6.3",
+    "jquery": "~2.1.4"
+  }
+}

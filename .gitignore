@@ -77,3 +77,4 @@ $RECYCLE.BIN/
 # User defined ignores
 # =========================
 .jshintrc
+bower_components
