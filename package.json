@@ -5,6 +5,7 @@
   "main": "src/animated-sansa.js",
   "scripts": {
     "start": "budo src/animated-sansa.js:js/animated-sansa.js --live | opnr | garnish",
+    "format": "standard --format src/** && standard src/**",
     "build": "browserify src/animated-sansa.js | uglifyjs -cm --screwie8 > js/animated-sansa.js"
   },
   "repository": {
@@ -28,26 +29,5 @@
     "opnr": "^1.0.4",
     "standard": "^4.5.2",
     "uglify-js": "^2.4.23"
-  },
-  "jshintConfig": {
-    "bitwise": true,
-    "curly": true,
-    "forin": true,
-    "freeze": true,
-    "futurehostile": true,
-    "latedef": "nofunc",
-    "maxcomplexity": 10,
-    "maxdepth": 4,
-    "noarg": true,
-    "nocomma": true,
-    "nonbsp": true,
-    "nonew": true,
-    "singleGroups": true,
-    "undef": true,
-    "unused": true,
-    "asi": true,
-    "browser": true,
-    "node": true,
-    "jquery": true
   }
 }
