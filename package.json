@@ -5,7 +5,7 @@
   "main": "src/animated-sansa.js",
   "scripts": {
     "start": "budo src/animated-sansa.js:js/animated-sansa.js --live | opnr | garnish",
-    "format": "standard --format src/** && standard src/**",
+    "format": "standard --format src/*.js",
     "build": "browserify src/animated-sansa.js | uglifyjs -cm --screwie8 > js/animated-sansa.js"
   },
   "repository": {
@@ -26,8 +26,13 @@
   "dependencies": {},
   "devDependencies": {
     "craftyjs": "^0.6.3",
+    "eslint": "^0.24.0",
+    "eslint-config-standard": "^3.4.1",
     "opnr": "^1.0.4",
     "standard": "^4.5.2",
     "uglify-js": "^2.4.23"
+  },
+  "eslintConfig": {
+    "extends": "standard"
   }
 }

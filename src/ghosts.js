@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 module.exports = function (Crafty) {
   Crafty.c('Ghost', {
     _f: 0,
@@ -27,8 +29,7 @@ module.exports = function (Crafty) {
       // TODO: Separate Active logic from Ghost
       this.color('rgb(117, 27, 192)')
       this.z = 150
-      this.removeComponent('Active') // seppuku
-      // FIXME: Why the hell doesn't tween work here!?
+      this.removeComponent('Active')
       this.tween({alpha: 0}, 200)
     },
     Ghost: function (tachId, firstFrame, previousFrames) {

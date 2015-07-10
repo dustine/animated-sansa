@@ -1,9 +1,11 @@
+/* eslint-env node */
+
 function scale (val, from, to) {
   return (val - from[0]) / (from[1] - from[0]) * (to[1] - to[0]) + to[0]
 }
 
 function angleBetween (origin, dest) {
-  // NOTE: y axis is flipped around
+  // NOTE: y axis is flipped
   return Math.atan2(-(dest[1] - origin[1]), dest[0] - origin[0])
 }
 
@@ -29,7 +31,7 @@ module.exports = function (Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER) {
     _gameEnd: 0,
     _tachId: 0,
     init: function () {
-      this._deadFrames = 0
+      this._spawnFrame = 0
       this._frames = []
     // this.requires('2D, Persist')
     },
@@ -44,6 +46,22 @@ module.exports = function (Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER) {
       // TODO: Regulate the Tachyon spawning to worsen as the game goes on
       // TODO: More kinds of Tachyons
 
+      function shouldSpawn () {
+        return this._dt >= this._spawnFrame
+      }
+      function pickTypes () {
+        var spawns = []
+        var randomMax = Math.random() * 5 + 1
+        for (var i = 0; i < randomMax; i++) {
+          var id = this._tachId++
+          spawns.push({
+            type: 'White',
+            id: id,
+            speed: 4
+          })
+        }
+        return spawns
+      }
       function pickSide (elem) {
         function topSide (elem) {
           // origin
@@ -185,24 +203,13 @@ module.exports = function (Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER) {
         }
       }
 
-      var spawns = []
-      if (this._deadFrames++ < 4) {
-        return spawns
+      if (!shouldSpawn()) {
+        return []
       }
-      this._deadFrames = 0
-      var randomMax = Math.random() * 5 + 1
-      for (var i = 0; i < randomMax; i++) {
-        var id = this._tachId++
-        spawns.push({
-          type: 'WhiteTachyon',
-          id: id,
-          speed: 4
-        })
-      }
-      // console.log(this._tachId)
-
+      // reset spawner counter
+      this._spawnFrame = this._dt + scale(Math.random(), [0, 1] , [4,]) 
+      var spawns = pickTypes()
       spawns.forEach(pickSide)
-
       return spawns
     },
     _spawn: function (frame) {
@@ -210,10 +217,13 @@ module.exports = function (Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER) {
         // TODO: Add more Tachyon types here too
         // console.log(elem)
         switch (elem.type) {
-          case 'WhiteTachyon':
+          case 'White':
             Crafty.e('WhiteTachyon')
               .whiteTachyon(elem.id, elem.x, elem.y, elem.angle, elem.speed)
             break
+          case 'Cyan':
+            Crafty.e('CyanTachyon')
+              .cyanTachyon(elem.x, elem.y, elem.w, elem.angle, elem.speed)
         }
       })
     },

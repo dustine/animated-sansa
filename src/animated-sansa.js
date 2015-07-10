@@ -1,6 +1,7 @@
-/* global $ */
+/* eslint-env node, jquery */
 var Crafty = require('craftyjs')
-var DEBUG = false
+// FIXME: Don't keep debug on!
+var DEBUG = true
 
 // HACK: Homemade time formattation, oh my
 function formatTime (ms) {

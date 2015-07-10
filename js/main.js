@@ -1,2 +1,4 @@
-$(document).ready(function() {
-});
+/* eslint-env jquery */
+
+$(document).ready(function () {
+})

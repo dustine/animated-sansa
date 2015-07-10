@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 module.exports = function (Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER, SIZE) {
   Crafty.c('Tachyon', {
     init: function () {
@@ -49,7 +51,7 @@ module.exports = function (Crafty, WIDTH, HEIGHT, BORDER, SPAWN_BORDER, SIZE) {
       this.x = x - Math.round(SIZE / 2)
       this.y = y - Math.round(SIZE / 2)
       this._movement.x = Math.cos(angle) * speed
-      // NOTE: y is flipped
+      // NOTE: y axis is flipped
       this._movement.y = -Math.sin(angle) * speed
       this.origin('center')
       this.rotation = (Math.PI - angle) * (180 / Math.PI)
