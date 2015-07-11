@@ -1,0 +1,18 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Dustine -- Developer -- @DustineAzules
+
+# THANKS
+
+    Spacey
+    Skaia.net folk
+    GitHub
+
+# TECHNOLOGY COLOPHON
+
+    CSS3, HTML5
+    jQuery, Modernizr, Normalize.css
+    Crafty.js
