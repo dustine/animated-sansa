@@ -28,6 +28,7 @@
     "gulp-useref": "^1.1.1",
     "main-bower-files": "^2.5.0",
     "opn": "^1.0.1",
+    "vinyl-paths": "^1.0.0",
     "webpack-stream": "^2.0.0",
     "wiredep": "^2.2.2"
   },

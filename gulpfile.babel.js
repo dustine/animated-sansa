@@ -5,6 +5,7 @@ import browserSync from 'browser-sync'
 import del from 'del'
 import webpack from 'webpack-stream'
 import { stream as wiredep } from 'wiredep'
+import vinylPaths from 'vinyl-paths'
 
 const $ = gulpLoadPlugins()
 const reload = browserSync.reload
@@ -35,7 +36,7 @@ function lint (files, options) {
 }
 const normalLintOptions = {
   extends: 'standard'
-};
+}
 
 const testLintOptions = {
   configFile: '.eslintrc',
@@ -177,9 +178,11 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
 })
 
 gulp.task('deploy', ['build'], function () {
-  return gulp.src('dist')
+  gulp.src('dist')
     .pipe($.subtree())
-    .pipe($.clean())
+    .on('end', function () {
+      del(['.tmp', 'dist'])
+    })
 })
 
 gulp.task('default', ['clean'], () => {
