@@ -7,10 +7,10 @@
 ;(function () {
   'use strict'
   function supportsProperty (p) {
-    var prefixes = ['Webkit', 'Moz', 'O', 'ms'],
-      i,
-      div = document.createElement('div'),
-      ret = p in div.style
+    var prefixes = ['Webkit', 'Moz', 'O', 'ms']
+    var i
+    var div = document.createElement('div')
+    var ret = p in div.style
     if (!ret) {
       p = p.charAt(0).toUpperCase() + p.substr(1)
       for (i = 0; i < prefixes.length; i += 1) {

@@ -1,49 +1,35 @@
 {
-  "name": "animated-sansa",
-  "version": "0.1.0",
-  "description": "A game about avoiding your past self over a crushing future",
-  "main": "src/animated-sansa.js",
-  "scripts": {
-    "start": "budo src/animated-sansa.js:js/animated-sansa.js --live | opnr | garnish",
-    "format": "standard --format src/*.js",
-    "lint": "eslint src",
-    "build": "browserify src/animated-sansa.js | uglifyjs -cm --screwie8 > js/animated-sansa.js"
+  "private": true,
+  "engines": {
+    "node": ">=0.12.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dustine/animated-sansa.git"
-  },
-  "keywords": [
-    "game",
-    "timetravel",
-    "arcade"
-  ],
-  "author": "Dustine Camacho",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/dustine/animated-sansa/issues"
-  },
-  "homepage": "https://github.com/dustine/animated-sansa#readme",
-  "dependencies": {},
   "devDependencies": {
-    "browser-sync": "^2.7.13",
-    "craftyjs": "^0.6.3",
-    "del": "^1.2.0",
-    "eslint": "^0.24.0",
+    "babel-core": "^5.5.6",
+    "browser-sync": "^2.2.1",
+    "del": "^1.1.1",
+    "eslint": "^0.24.1",
     "eslint-config-standard": "^3.4.1",
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^2.3.1",
-    "gulp-cache": "^0.2.10",
-    "gulp-concat": "^2.6.0",
-    "gulp-imagemin": "^2.3.0",
-    "gulp-jshint": "^1.11.2",
-    "gulp-minify-css": "^1.2.0",
-    "gulp-notify": "^2.2.0",
+    "gulp-cache": "^0.2.8",
+    "gulp-eslint": "^0.15.0",
+    "gulp-if": "^1.2.5",
+    "gulp-imagemin": "^2.2.1",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-minify-css": "^1.1.1",
+    "gulp-minify-html": "^1.0.0",
+    "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.2.0",
-    "opnr": "^1.0.4",
-    "standard": "^4.5.2",
-    "uglify-js": "^2.4.23"
+    "gulp-sass": "^2.0.0",
+    "gulp-size": "^1.2.1",
+    "gulp-sourcemaps": "^1.5.0",
+    "gulp-subtree": "^0.1.0",
+    "gulp-uglify": "^1.1.0",
+    "gulp-useref": "^1.1.1",
+    "main-bower-files": "^2.5.0",
+    "opn": "^1.0.1",
+    "webpack-stream": "^2.0.0",
+    "wiredep": "^2.2.2"
   },
   "eslintConfig": {
     "extends": "standard"
