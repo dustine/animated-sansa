@@ -177,13 +177,14 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}))
 })
 
-gulp.task('deploy', ['build'], function () {
-  gulp.src('dist')
-    .pipe($.subtree())
-    .on('end', function () {
-      del(['.tmp', 'dist'])
-    })
-})
+// FIXME: It fails even when the password is correct
+// gulp.task('deploy', ['build'], function () {
+//   gulp.src('dist')
+//     .pipe($.subtree())
+//     .on('end', function () {
+//       del(['.tmp', 'dist'])
+//     })
+// })
 
 gulp.task('default', ['clean'], () => {
   gulp.start('build')
