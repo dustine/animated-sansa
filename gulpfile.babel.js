@@ -196,17 +196,13 @@ gulp.task('deploy', ['build'], function () {
 
     exec('git add -A ' + folder + ' && git commit -m "' + message + '"', function (error) {
       if (error) {
-        // return cb(error)
-        console.error(error)
-        return
+        return cb(error)
       }
       // gutil.log('Temporarily committing ' + chalk.magenta(folder))
       gutil.log('Temporarily committing ' + gutil.colors.magenta(folder))
       exec('git ls-remote ' + remote + ' ' + branch, function (error, rmt) {
         if (error) {
-          // return cb(error);
-          console.error(error)
-          return
+          return cb(error)
         }
         if (rmt.length > 0) {
           gutil.log('Cleaning ' + gutil.colors.cyan(remote) + '/' + gutil.colors.cyan(branch))
@@ -231,16 +227,12 @@ gulp.task('deploy', ['build'], function () {
       gutil.log('Pushing ' + gutil.colors.magenta(folder) + ' to ' + gutil.colors.cyan(remote) + '/' + gutil.colors.cyan(branch))
       exec('git subtree push --prefix ' + folder + ' ' + remote + ' ' + branch, function (error) {
         if (error) {
-          // return cb(error);
-          console.error(error)
-          return
+          return cb(error)
         }
         gutil.log('Resetting ' + gutil.colors.magenta(folder) + ' temporary commit')
         exec('git reset HEAD~1', function (error) {
           if (error) {
-            // return cb(error);
-            console.error(error)
-            return
+            return cb(error)
           }
 
         })
