@@ -359,7 +359,7 @@ $(function () {
       .attr({x: (WIDTH - 400) / 2, y: (HEIGHT - 100) / 2 + 100, w: 400, h: 100})
       // TODO: Move this to the CSS (hint: Components == Classes)
       .css({
-        'background': 'linear-gradient(to bottom, skyBlue 0%, cyan 100%)',
+        'background': 'linear-gradient(to bottom, rgb(84, 193, 188) 0%, rgb(19, 154, 150) 100%)',
         'border-radius': '0.5em'
       })
       .bind('Click', function () {

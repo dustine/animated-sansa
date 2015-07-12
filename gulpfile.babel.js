@@ -177,40 +177,37 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
 })
 
 // FIXME: It fails even when the password is correct
-gulp.task('deploy', ['build'], function () {
+gulp.task('deploy', ['build'], function (cb) {
   // return gulp.src('dist')
   //   .pipe($.subtree())
   //   // .on('end', function () {
   //   //   del(['.tmp', 'dist'])
   //   // })
 
-  // execute('git add ' + folder, function () {
-  (function subtree (folder, cb) {
+  var gutil = require('gulp-util')
+  ;(function subtree (folder, callback) {
     var exec = require('child_process').exec
-    var gutil = require('gulp-util')
-    // var chalk = require('chalk')
 
     var remote = 'origin'
     var branch = 'gh-pages'
     var message = 'Distribution Commit'
 
+    // execute('git add ' + folder, function () {
     exec('git add -A ' + folder + ' && git commit -m "' + message + '"', function (error) {
       if (error) {
-        return cb(error)
+        return callback(error)
       }
       // gutil.log('Temporarily committing ' + chalk.magenta(folder))
       gutil.log('Temporarily committing ' + gutil.colors.magenta(folder))
       exec('git ls-remote ' + remote + ' ' + branch, function (error, rmt) {
         if (error) {
-          return cb(error)
+          return callback(error)
         }
         if (rmt.length > 0) {
           gutil.log('Cleaning ' + gutil.colors.cyan(remote) + '/' + gutil.colors.cyan(branch))
           exec('git push ' + remote + ' :' + branch, function (error) {
             if (error) {
-              // return cb(error);
-              console.error(error)
-              return
+              return callback(error)
             }
             deployFinish()
           })
@@ -227,26 +224,24 @@ gulp.task('deploy', ['build'], function () {
       gutil.log('Pushing ' + gutil.colors.magenta(folder) + ' to ' + gutil.colors.cyan(remote) + '/' + gutil.colors.cyan(branch))
       exec('git subtree push --prefix ' + folder + ' ' + remote + ' ' + branch, function (error) {
         if (error) {
-          return cb(error)
+          return callback(error)
         }
         gutil.log('Resetting ' + gutil.colors.magenta(folder) + ' temporary commit')
         exec('git reset HEAD~1', function (error) {
-          if (error) {
-            return cb(error)
-          }
-
+          return callback(error)
         })
       })
     }
   })('dist', function (error) {
     if (error) {
-      console.log(error)
-      return
+      return cb(error)
     }
     // ////////////////////////////
     // Delete files
     // ////////////////////////////
+    gutil.log('Deleting build files')
     del.call(null, ['.tmp', 'dist'])
+    cb()
   })
 })
 
