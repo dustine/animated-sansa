@@ -5,7 +5,6 @@ import browserSync from 'browser-sync'
 import del from 'del'
 import webpack from 'webpack-stream'
 import { stream as wiredep } from 'wiredep'
-import vinylPaths from 'vinyl-paths'
 
 const $ = gulpLoadPlugins()
 const reload = browserSync.reload
@@ -179,11 +178,84 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
 
 // FIXME: It fails even when the password is correct
 gulp.task('deploy', ['build'], function () {
-  return gulp.src('dist')
-    .pipe($.subtree())
-    // .on('end', function () {
-    //   del(['.tmp', 'dist'])
-    // })
+  // return gulp.src('dist')
+  //   .pipe($.subtree())
+  //   // .on('end', function () {
+  //   //   del(['.tmp', 'dist'])
+  //   // })
+
+  // execute('git add ' + folder, function () {
+  (function subtree (folder, cb) {
+    var exec = require('child_process').exec
+    var gutil = require('gulp-util')
+    // var chalk = require('chalk')
+
+    var remote = 'origin'
+    var branch = 'gh-pages'
+    var message = 'Distribution Commit'
+
+    exec('git add -A ' + folder + ' && git commit -m "' + message + '"', function (error) {
+      if (error) {
+        // return cb(error)
+        console.error(error)
+        return
+      }
+      // gutil.log('Temporarily committing ' + chalk.magenta(folder))
+      gutil.log('Temporarily committing ' + gutil.colors.magenta(folder))
+      exec('git ls-remote ' + remote + ' ' + branch, function (error, rmt) {
+        if (error) {
+          // return cb(error);
+          console.error(error)
+          return
+        }
+        if (rmt.length > 0) {
+          gutil.log('Cleaning ' + gutil.colors.cyan(remote) + '/' + gutil.colors.cyan(branch))
+          exec('git push ' + remote + ' :' + branch, function (error) {
+            if (error) {
+              // return cb(error);
+              console.error(error)
+              return
+            }
+            deployFinish()
+          })
+        } else {
+          deployFinish()
+        }
+      })
+    })
+
+    // ////////////////////////////
+    // Finish Deploy
+    // ////////////////////////////
+    var deployFinish = function () {
+      gutil.log('Pushing ' + gutil.colors.magenta(folder) + ' to ' + gutil.colors.cyan(remote) + '/' + gutil.colors.cyan(branch))
+      exec('git subtree push --prefix ' + folder + ' ' + remote + ' ' + branch, function (error) {
+        if (error) {
+          // return cb(error);
+          console.error(error)
+          return
+        }
+        gutil.log('Resetting ' + gutil.colors.magenta(folder) + ' temporary commit')
+        exec('git reset HEAD~1', function (error) {
+          if (error) {
+            // return cb(error);
+            console.error(error)
+            return
+          }
+
+        })
+      })
+    }
+  })('dist', function (error) {
+    if (error) {
+      console.log(error)
+      return
+    }
+    // ////////////////////////////
+    // Delete files
+    // ////////////////////////////
+    del.call(null, ['.tmp', 'dist'])
+  })
 })
 
 gulp.task('default', ['clean'], () => {
